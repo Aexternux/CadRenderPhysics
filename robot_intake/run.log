@@ -1,0 +1,439 @@
+[34m* onshape-to-robot version 1.8.2[0m
+[1m* Using configuration workspace ID 3c48b672ac04acde802aec99 ...[0m
+[1m* Using configuration element ID 8f614b6c781459ac2c89893d ...[0m
+[1m* Retrieving assembly with id 8f614b6c781459ac2c89893d[0m
+[auto_import] Base link: 'Static Assembly <1>' (fixed=False, mate-degree=4)
+[auto_import] Auto-tagged 3 movable mate(s) as joints:
+[auto_import]   'Revolute 1'  ->  dof_revolute_1
+[auto_import]   'Slider 1'  ->  dof_slider_1
+[auto_import]   'Slider 2'  ->  dof_slider_2
+[32m+ Found DOF: revolute_1 (revolute) [-2.182: 0.0][0m
+[32m+ Found DOF: slider_1 (prismatic) [0.0: 0.0][0m
+[32m+ Found DOF: slider_2 (prismatic) [0.0: 0.0][0m
+[32m* Found total 3 degrees of freedom[0m
+[32m* Found 1 root nodes:[0m
+[32m  - Static Assembly <1>[0m
+
+[32m+ Adding part #10-32 Nylon-Insert Locknut <5>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part Crush Plate <4>[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part 12t Steel Sprocket (#25, 1/2" Rounded Hex Bore, Double Hub) <1>[2m (configuration: Type=_12t_Steel)[0m[0m
+[32m+ Adding part 1/2" Hex Bore Custom Spacer (0.75" OD,0.284" L) <6>[2m (configuration: B=64.0;Bore_Size=0.012700000000000001+meter;G=64.0;Length=0.0072263+meter;Bore Type=Default;OD=0.01905+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part Pivot Shaft <1>[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <1>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <1>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <3>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part 0.32" ID Custom Spacer (0.5" OD,0.502" L) <1>[2m (configuration: B=64.0;Bore_Size=0.008128000000000002+meter;G=64.0;Length=0.012750800000000001+meter;OD=0.012700000000000001+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part 1/2" Hex Clamping Shaft Collar (Split) <1>[2m (configuration: Bore=_1_2__Hex__Split_)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L BHCS (Steel, Black Oxide) <8>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_75_)[0m[0m
+[32m+ Adding part 10t Steel Spur Gear (20 DP, 12T Center Distance, SplineXS Bore) <2>[2m (configuration: Configuration=_8T_Steel_20DP__10T_Center_Distance_0)[0m[0m
+[32m+ Adding part Origin Cube <1>[0m
+[32m+ Adding part Non-Gearbox Plate <1>[0m
+[33mWARNING: part Non-Gearbox Plate <1> has no mass, maybe you should assign a material to it ?[0m
+[32m+ Adding part Left Wall <1>[0m
+[32m+ Adding part Sprocket Shaft <1>[0m
+[32m+ Adding part Gearbox Shaft <1>[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <1>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part Right Wall <1>[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part Kraken X60 Brushless Motor <2>[2m (configuration: Vendor=Default;Simplified_Model=true)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <4>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part Outer Pivot Holder <1>[0m
+[32m+ Adding part Crush Plate <2>[0m
+[32m+ Adding part Crush Plate <5>[0m
+[32m+ Adding part 1/2" Hex Bore Custom Spacer (0.75" OD,0.183" L) <1>[2m (configuration: B=64.0;Bore_Size=0.012700000000000001+meter;G=64.0;Length=0.004635500000000001+meter;Bore Type=Default;OD=0.01905+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <23>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 3" L SHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Socket;Length=_3;Length=_3_8_)[0m[0m
+[32m+ Adding part Hardstop <1>[0m
+[32m+ Adding part #10-32 x 1/2" L BHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_2_)[0m[0m
+[32m+ Adding part 50t Pocketed Aluminum Spur Gear (20 DP, 1/2" Hex Bore) <1>[2m (configuration: Configuration=_50tt_Pocketed_Aluminum)[0m[0m
+[32m+ Adding part Crush Plate <1>[0m
+[32m+ Adding part 1/2" Hex Bore Custom Spacer (0.75" OD,0.8" L) <1>[2m (configuration: B=64.0;Bore_Size=0.012700000000000001+meter;G=64.0;Length=0.020320000000000005+meter;Bore Type=Default;OD=0.01905+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part Gearbox Motor Spacer <1>[0m
+[32m+ Adding part Pivot Chain <1>[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part 1/2" Hex Bore Custom Spacer (0.75" OD,0.091" L) <4>[2m (configuration: B=64.0;Bore_Size=0.012700000000000001+meter;G=64.0;Length=0.0022987000000000003+meter;Bore Type=Default;OD=0.01905+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part 18t Steel Spur Gear (20 DP, 1/2" Hex Bore) <1>[2m (configuration: Configuration=_18t_Steel)[0m[0m
+[32m+ Adding part 54t Pocketed Aluminum Spur Gear (20 DP, 1/2" Hex Bore) <1>[2m (configuration: Configuration=_54t_Pocketed_Aluminum)[0m[0m
+[32m+ Adding part Gearbox Outer Plate <1>[0m
+[32m+ Adding part Wall Spacer <1>[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <1>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part Gearbox Inner Plate <1>[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <1>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_75_)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_75_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <9>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <10>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <9>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <9>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <14>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <7>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <8>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <15>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <5>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part Pivot Shaft <2>[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <10>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <7>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <7>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part 1/2" Hex Bore Custom Spacer (0.75" OD,0.091" L) <1>[2m (configuration: B=64.0;Bore_Size=0.012700000000000001+meter;G=64.0;Length=0.0022987000000000003+meter;Bore Type=Default;OD=0.01905+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part 1/2" Hex Bore Custom Spacer (0.75" OD,0.284" L) <1>[2m (configuration: B=64.0;Bore_Size=0.012700000000000001+meter;G=64.0;Length=0.0072263+meter;Bore Type=Default;OD=0.01905+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <16>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <10>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <13>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part Pivot Chain <2>[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <12>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <15>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <11>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <10>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <11>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <4>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 x 0.25" L Shaft End Screw (Steel, Black Oxide) <4>[2m (configuration: Configuration=Default)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <10>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <6>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <14>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part 12t Steel Sprocket (#25, 1/2" Rounded Hex Bore, Double Hub)-Mirrored <1>[2m (configuration: Type=_12t_Steel)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <3>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <9>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <2>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <14>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <10>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <9>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <13>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part Hardstop <3>[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <8>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <8>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <13>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <9>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part Outer Pivot Holder <2>[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <7>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part Wall Spacer <2>[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <9>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <12>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <12>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <13>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <3>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <2>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <15>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <6>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <7>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3" L SHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Socket;Length=_3;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3" L SHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Socket;Length=_3;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3" L SHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Socket;Length=_3;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <17>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <16>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1-3/4" L SHCS (Steel, Black Oxide) <18>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1_3_4;Length=_3_8_)[0m[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <6>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <3>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <4>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <2>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part 3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum) <5>[2m (configuration: Grip Length=_250_____438_)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <3>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <4>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <2>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part #10-32 x 0.25" L Shaft End Screw (Steel, Black Oxide) <1>[2m (configuration: Configuration=Default)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <2>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <4>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <3>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <10>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <24>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <12>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <25>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <11>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <13>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <26>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <9>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <1>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <4>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <2>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <8>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <2>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <3>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <8>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <4>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <6>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <9>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <7>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <5>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <7>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <6>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L SHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Socket;Length=_2_1_2;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 0.25" L Shaft End Screw (Steel, Black Oxide) <1>[2m (configuration: Configuration=Default)[0m[0m
+[32m+ Adding part #10-32 x 0.25" L Shaft End Screw (Steel, Black Oxide) <2>[2m (configuration: Configuration=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <7>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <6>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 Nylon-Insert Locknut <8>[2m (configuration: Type=Default)[0m[0m
+[32m+ Adding part #10-32 x 1/2" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_2_)[0m[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <2>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part 0.196" ID Custom Spacer (0.375" OD,1" L) <1>[2m (configuration: B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part #10-32 x 7/8" L BHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_7_8_)[0m[0m
+[32m+ Adding part Bottom Kickerbar <1>[0m
+[32m+ Adding part 1.125" ID Custom Spacer (1.225" OD,0.075" L) <1>[2m (configuration: B=64.0;Bore_Size=0.028575000000000003+meter;G=64.0;Length=0.001905+meter;OD=0.031115000000000004+meter;R=64.0;SplineTolerance=2.5400000000000005E-4+meter)[0m[0m
+[32m+ Adding part #10-32 Tube Connecting Nut (0.625" ID Tube) <1>[2m (configuration: For Tube ID=Default)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <1>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_2_5_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <1>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part Top Kickerbar <1>[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <2>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part #10-32 x 1-1/2" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_5_)[0m[0m
+[32m+ Adding part Tube Plug Washer <1>[0m
+[32m+ Adding part Roller Motor Spacer <1>[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part Roller Belt <1>[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part Sprocket Spacer <1>[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <28>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <1>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <7>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part 0.32" ID Custom Spacer (0.5" OD,0.377" L) <1>[2m (configuration: B=64.0;Bore_Size=0.008128000000000002+meter;G=64.0;Length=0.0095758+meter;OD=0.012700000000000001+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part 36T Flat Plate Sprocket <1>[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <8>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part Scotch Yoke Pin <1>[0m
+[32m+ Adding part Kraken X60 Brushless Motor <3>[2m (configuration: Vendor=Default;Simplified_Model=true)[0m[0m
+[32m+ Adding part #10-32 x 1" L BHCS (Steel, Black Oxide) <7>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_)[0m[0m
+[32m+ Adding part Origin Cube <1>[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <14>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part Tube 2"x1"x25.375" <1>[0m
+[32m+ Adding part Aluminum Tube Plug (2" x 1" x 1/8" Tube) <1>[2m (configuration: Tube Wall Thickness=_1_8_;Tube Dimensions=_2__x_1__x_1_16_;Top_Holes_Threaded=false)[0m[0m
+[32m+ Adding part 14t Aluminum Pulley (HTD 5mm, 15mm Wide, 8mm SplineXS Bore) <1>[2m (configuration: Configuration=_14t_x_15mm__HTD_5mm_)[0m[0m
+[32m+ Adding part 1/2" Hex Clamping Shaft Collar <1>[2m (configuration: Bore=Default)[0m[0m
+[32m+ Adding part Intake Arm <1>[0m
+[32m+ Adding part PC Holder Plate <1>[0m
+[32m+ Adding part Slider Washer <1>[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <11>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <12>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <23>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <26>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <10>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <8>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <9>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <10>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <7>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <5>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <20>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L BHCS (Steel, Black Oxide) <6>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_2_5_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <17>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <11>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <5>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <21>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <19>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part Tube Plug Washer <2>[0m
+[32m+ Adding part #10-32 x 7/8" L BHCS (Steel, Black Oxide) <6>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_7_8_)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L BHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_2_5_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <9>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <8>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <9>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <24>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part 36T Flat Plate Sprocket <2>[0m
+[32m+ Adding part Roller Motor Spacer <2>[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <27>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <24>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 1" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <9>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <3>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <8>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <12>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <29>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part Scotch Yoke Pin <2>[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <27>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <11>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L BHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_2_5_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <25>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 1-1/2" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_5_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <11>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part Roller Belt <2>[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <8>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <6>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part Aluminum Tube Plug (2" x 1" x 1/8" Tube) <2>[2m (configuration: Tube Wall Thickness=_1_8_;Tube Dimensions=_2__x_1__x_1_16_;Top_Holes_Threaded=false)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <4>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <25>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <7>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <9>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 7/8" L BHCS (Steel, Black Oxide) <7>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_7_8_)[0m[0m
+[32m+ Adding part Slider Washer <2>[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <7>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part 0.32" ID Custom Spacer (0.5" OD,0.377" L) <2>[2m (configuration: B=64.0;Bore_Size=0.008128000000000002+meter;G=64.0;Length=0.0095758+meter;OD=0.012700000000000001+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part 1/2" Hex Clamping Shaft Collar-Mirrored <1>[2m (configuration: Bore=Default)[0m[0m
+[32m+ Adding part Sprocket Spacer <2>[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <15>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <10>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 7/8" L BHCS (Steel, Black Oxide) <8>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_7_8_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <18>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 1" L SHCS (Steel, Black Oxide) <6>[2m (configuration: Finish=Default;Head Type=Socket;Length=_1;Length=_3_8_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <7>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <5>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part 14t Aluminum Pulley (HTD 5mm, 15mm Wide, 8mm SplineXS Bore)-Mirrored <1>[2m (configuration: Configuration=_14t_x_15mm__HTD_5mm_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <25>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part Intake Arm <2>[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <13>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <5>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <7>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part PC Holder Plate-Mirrored <1>[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <6>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L FHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Flat;Length=_3_4_;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 Tube Connecting Nut (0.625" ID Tube) <4>[2m (configuration: For Tube ID=Default)[0m[0m
+[32m+ Adding part #10-32 Tube Connecting Nut (0.625" ID Tube) <2>[2m (configuration: For Tube ID=Default)[0m[0m
+[32m+ Adding part #10-32 Tube Connecting Nut (0.625" ID Tube) <3>[2m (configuration: For Tube ID=Default)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm OD)-2.563" <1>[2m (configuration: B=64.0;BearingDepth=0.006350000000000001+meter;BearingFlangeOD=0.031115000000000004+meter;Bearing_Flange_Height=0.0015875000000000002+meter;Bearing_OD=0.028575000000000003+meter;Bearing_Tolerance=1.2700000000000002E-4+meter;Endcap_Tolerance=1.2700000000000002E-4+meter;Flange_Width=0.0031750000000000003+meter;G=64.0;Hex_Bore=false;Inner_Bearing=false;Inset_Bearing_Flange=true;Stub Type=_1_2__Hex;Mounting Type=Default;Endcap Type=Double_HTD;Outer_Bearing=true;R=64.0;Roller_Length=0.6096+meter;Shaft_Stickout=0.006350000000000001+meter;Spacer_Length=0.006350000000000001+meter;Throughbore_OD=0.012700000000000001+meter;Tooth_Count=28.0;TubeID=0.04762500000000001+meter;Tube_OD=0.050800000000000005+meter)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm OD)-2.563" <1>[2m (configuration: B=64.0;BearingDepth=0.006350000000000001+meter;BearingFlangeOD=0.031115000000000004+meter;Bearing_Flange_Height=0.0015875000000000002+meter;Bearing_OD=0.028575000000000003+meter;Bearing_Tolerance=1.2700000000000002E-4+meter;Endcap_Tolerance=1.2700000000000002E-4+meter;Flange_Width=0.0031750000000000003+meter;G=64.0;Hex_Bore=false;Inner_Bearing=false;Inset_Bearing_Flange=true;Stub Type=_1_2__Hex;Mounting Type=Default;Endcap Type=Double_HTD;Outer_Bearing=true;R=64.0;Roller_Length=0.644525+meter;Shaft_Stickout=0.006350000000000001+meter;Spacer_Length=0.006350000000000001+meter;Throughbore_OD=0.012700000000000001+meter;Tooth_Count=28.0;TubeID=0.04762500000000001+meter;Tube_OD=0.050800000000000005+meter)[0m[0m
+[32m+ Adding part Deadaxle Tube_22.375_in <1>[2m (configuration: A=0.8;B=255.0;Bolts=true;G=255.0;Inset_Bearing_Flange=true;Left_Endcap_Length=0.025400000000000002+meter;Left_Shaft_Stickout=0.006350000000000001+meter;Left_Spacer_Length=0.006350000000000001+meter;Tube Material=Default;Outer_Flange_Width=0.0031750000000000003+meter;R=255.0;Right_Endcap_Length=0.025400000000000002+meter;Right_Shaft_Stickout=0.006350000000000001+meter;Right_Spacer_Lenth=0.006350000000000001+meter;Roller_Length=0.644525+meter;Tube_ID=0.04762500000000001+meter;Tube_OD=0.050800000000000005+meter)[0m[0m
+[32m+ Adding part #10-32 x 0.375" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Bolt Size=_3_8)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <1>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[33mWARNING: Parts with same name "1_2__rounded_hex__13_75mm__id_bearing__1_125__od__0_313__wd__shielded__flanged___1cc93510fc734d3a3175dc4e0759a935", incrementing STL name to "1_2__rounded_hex__13_75mm__id_bearing__1_125__od__0_313__wd__shielded__flanged___1cc93510fc734d3a3175dc4e0759a935__2"[0m
+[32m+ Adding part Roller Endcap_Double HTD_28_Tooth_Square Nut <2>[2m (configuration: B=64.0;BearingDepth=0.006350000000000001+meter;BearingFlangeOD=0.031115000000000004+meter;Bearing_Flange_Height=0.0015875000000000002+meter;Bearing_OD=0.028575000000000003+meter;Bearing_Tolerance=1.2700000000000002E-4+meter;Endcap_Tolerance=1.2700000000000002E-4+meter;Flange_Width=0.0031750000000000003+meter;G=64.0;Hex_Bore=false;Inner_Bearing=true;Inset_Bearing_Flange=true;Stub Type=Default;Mounting Type=Default;Endcap Type=Double_HTD;Outer_Bearing=true;R=64.0;Roller_Length=0.644525+meter;Shaft_Stickout=0.006350000000000001+meter;Spacer_Length=0.006350000000000001+meter;Throughbore_OD=0.015875+meter;Tooth_Count=28.0;TubeID=0.04762500000000001+meter;Tube_OD=0.050800000000000005+meter)[0m[0m
+[32m+ Adding part Roller Endcap_Double HTD_28_Tooth_Square Nut <1>[2m (configuration: B=64.0;BearingDepth=0.006350000000000001+meter;BearingFlangeOD=0.031115000000000004+meter;Bearing_Flange_Height=0.0015875000000000002+meter;Bearing_OD=0.028575000000000003+meter;Bearing_Tolerance=1.2700000000000002E-4+meter;Endcap_Tolerance=1.2700000000000002E-4+meter;Flange_Width=0.0031750000000000003+meter;G=64.0;Hex_Bore=false;Inner_Bearing=true;Inset_Bearing_Flange=true;Stub Type=Default;Mounting Type=Default;Endcap Type=Double_HTD;Outer_Bearing=true;R=64.0;Roller_Length=0.644525+meter;Shaft_Stickout=0.006350000000000001+meter;Spacer_Length=0.006350000000000001+meter;Throughbore_OD=0.015875+meter;Tooth_Count=28.0;TubeID=0.04762500000000001+meter;Tube_OD=0.050800000000000005+meter)[0m[0m
+[32m+ Adding part #10-32 x 0.375" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Bolt Size=_3_8)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <1>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <1>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part 1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged) <2>[2m (configuration: Dimensions=_0_375__ID_x_0_875__OD_x_0_281__WD__Radial_;Vendor=Default)[0m[0m
+[32m+ Adding part #10-32 Square Nut <1>[2m (configuration: Type=Square_Nut)[0m[0m
+[32m+ Adding part 0.541" ID Custom Spacer (0.75" OD,0.25" L) <2>[2m (configuration: B=64.0;Bore_Size=0.01375+meter;G=64.0;Length=0.006350000000000001+meter;OD=0.01905+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part 0.541" ID Custom Spacer (0.75" OD,0.25" L) <1>[2m (configuration: B=64.0;Bore_Size=0.01375+meter;G=64.0;Length=0.006350000000000001+meter;OD=0.01905+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter)[0m[0m
+[32m+ Adding part Kraken X60 Brushless Motor <1>[2m (configuration: Vendor=Default;Simplified_Model=true)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_2_5_)[0m[0m
+[32m+ Adding part #10-32 x 2-1/2" L BHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_2_5_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <12>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <10>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 7/8" L BHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_7_8_)[0m[0m
+[32m+ Adding part #10-32 x 7/8" L BHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_7_8_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <4>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <5>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <6>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <2>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <3>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10-32 x 3/8" L BHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_8_)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <2>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <9>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <4>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <3>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <6>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 3/4" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_3_4_)[0m[0m
+[32m+ Adding part #10-32 Square Nut <3>[2m (configuration: Type=Square_Nut)[0m[0m
+[32m+ Adding part #10-32 Square Nut <2>[2m (configuration: Type=Square_Nut)[0m[0m
+[32m+ Adding part #10-32 Square Nut <4>[2m (configuration: Type=Square_Nut)[0m[0m
+[32m+ Adding part #10-32 x 0.375" L BHCS (Steel, Black Oxide) <3>[2m (configuration: Bolt Size=_3_8)[0m[0m
+[32m+ Adding part #10-32 x 0.375" L BHCS (Steel, Black Oxide) <4>[2m (configuration: Bolt Size=_3_8)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <1>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 0.375" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Bolt Size=_3_8)[0m[0m
+[32m+ Adding part #10 Washer (5/8" OD, 0.031" WD, Steel, Black Zinc) <1>[2m (configuration: Configuration=_10_x_5_8__OD_x__031__WD)[0m[0m
+[32m+ Adding part #10-32 x 0.375" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Bolt Size=_3_8)[0m[0m
+[32m+ Adding part Slider Washer <2>[0m
+[32m+ Adding part Moving Hopper Wall <1>[0m
+[32m+ Adding part Slider Washer <1>[0m
+[32m+ Adding part Origin Cube <1>[0m
+[32m+ Adding part Front Hopper Wall <1>[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <1>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part Slider Pin <1>[0m
+[32m+ Adding part Hopper Bracket <1>[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <7>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <11>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part Slider Washer <14>[0m
+[32m+ Adding part Slider Washer <13>[0m
+[32m+ Adding part Slider Washer <11>[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <18>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <14>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <18>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <16>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <12>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part Slider Pin <5>[0m
+[32m+ Adding part Slider Pin <3>[0m
+[32m+ Adding part Hopper Bracket <2>[0m
+[32m+ Adding part Moving Hopper Wall <2>[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <17>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <15>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <6>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part Slider Washer <12>[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <13>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <19>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <10>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <9>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <8>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <7>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <6>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part Slider Pin <2>[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <3>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part Slider Washer <6>[0m
+[32m+ Adding part Slider Washer <5>[0m
+[32m+ Adding part Slider Washer <2>[0m
+[32m+ Adding part Moving Hopper Wall <1>[0m
+[32m+ Adding part Slider Washer <1>[0m
+[32m+ Adding part Origin Cube <1>[0m
+[32m+ Adding part Front Hopper Wall <1>[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <1>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <1>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part Slider Pin <1>[0m
+[32m+ Adding part Hopper Bracket <1>[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <7>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <11>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part Slider Washer <14>[0m
+[32m+ Adding part Slider Washer <13>[0m
+[32m+ Adding part Slider Washer <11>[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <18>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <14>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <18>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <16>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <12>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part Slider Pin <5>[0m
+[32m+ Adding part Slider Pin <3>[0m
+[32m+ Adding part Hopper Bracket <2>[0m
+[32m+ Adding part Moving Hopper Wall <2>[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <17>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <15>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <6>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part Slider Washer <12>[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <13>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <19>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <4>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <3>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <10>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <9>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <8>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <7>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <6>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part #10-32 x 1/4" L BHCS (Steel, Black Oxide) <5>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_4_)[0m[0m
+[32m+ Adding part Slider Pin <2>[0m
+[32m+ Adding part #10-32 x 1-1/4" L BHCS (Steel, Black Oxide) <2>[2m (configuration: Finish=Default;Head Type=Default;Length=_3_8;Length=_1_25_)[0m[0m
+[32m+ Adding part #10-32 Thin Nylon-Insert Locknut <3>[2m (configuration: Type=Thin_Nylock)[0m[0m
+[32m+ Adding part Slider Washer <6>[0m
+[32m+ Adding part Slider Washer <5>[0m
+[32m* Writing robot.urdf[0m
+[auto_import] postprocess: 1 joint name(s) de-duplicated, 2 joint(s) given default limits -> robot_intake\robot.urdf

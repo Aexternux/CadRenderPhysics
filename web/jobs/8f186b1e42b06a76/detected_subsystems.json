@@ -1,0 +1,236 @@
+{
+  "url": "https://cad.onshape.com/documents/6a599e86778c961f60686fd2/w/73820253f2f9a1333b26cee4/e/4d8a8d60dec06c9b3d3a0c3a",
+  "eid": "4d8a8d60dec06c9b3d3a0c3a",
+  "total": 6,
+  "kinematicsVersion": 1,
+  "subsystems": [
+    {
+      "name": "115O-26O-HOPPER <1>",
+      "linked": true,
+      "mechanisms": [
+        {
+          "mateName": "Slider 1",
+          "type": "Slider",
+          "role": "linear (elevator/telescope)",
+          "featureId": "MKO4EsX1Ok/ZY5Xm3",
+          "ownerPath": [
+            "M2MGpxB5kyaA0mkQq"
+          ],
+          "depth": 1,
+          "drive": {
+            "axis": {
+              "origin": [
+                -0.0,
+                0.639127,
+                0.370056
+              ],
+              "dir": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "movingPrefixes": [
+              "M2MGpxB5kyaA0mkQq/MIy6tVrLiN+yBUj5W"
+            ],
+            "min": -0.3048,
+            "max": 0.0,
+            "rest": -0.3048,
+            "limited": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "115-26O-INTAKE <1>",
+      "linked": true,
+      "mechanisms": [
+        {
+          "mateName": "Revolute 1",
+          "type": "Revolute",
+          "role": "rotary",
+          "featureId": "MMgFo5wqyVH/fhO4A",
+          "ownerPath": [
+            "M8elnfDJm4LPfyjF+"
+          ],
+          "depth": 1,
+          "drive": {
+            "axis": {
+              "origin": [
+                0.0,
+                0.2794,
+                0.1778
+              ],
+              "dir": [
+                -1.0,
+                -0.0,
+                -0.0
+              ]
+            },
+            "movingPrefixes": [
+              "M8elnfDJm4LPfyjF+/MeG1bRUmLHZMDzaml"
+            ],
+            "min": -2.181661564992912,
+            "max": 0.0,
+            "rest": 0.0,
+            "limited": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "115-26O-ROLLERS <1>",
+      "linked": true,
+      "mechanisms": [
+        {
+          "mateName": "Revolute 2",
+          "type": "Revolute",
+          "role": "rotary",
+          "featureId": "M6BRWkJ/ujwPXeHv8",
+          "ownerPath": [
+            "MPpbQW9lv50xsQ2Ya"
+          ],
+          "depth": 1,
+          "drive": {
+            "axis": {
+              "origin": [
+                0.2667,
+                -0.088801,
+                0.080268
+              ],
+              "dir": [
+                1.0,
+                -0.0,
+                -0.0
+              ]
+            },
+            "movingPrefixes": [
+              "MPpbQW9lv50xsQ2Ya/M0cHfBWO347rGt7KI",
+              "MPpbQW9lv50xsQ2Ya/MBy1BSgTCL6dhhhzv",
+              "MPpbQW9lv50xsQ2Ya/MESHLhK3jkF2gNx51",
+              "MPpbQW9lv50xsQ2Ya/MSj7cyudqDrbnNuVX",
+              "MPpbQW9lv50xsQ2Ya/MTRCgoZBUWIlnejbX",
+              "MPpbQW9lv50xsQ2Ya/MgtGh7ffXjQhehw5D",
+              "MPpbQW9lv50xsQ2Ya/MnRqGgM/xwuuQfymz"
+            ],
+            "min": null,
+            "max": null,
+            "rest": -0.5235987755982983,
+            "limited": false
+          }
+        },
+        {
+          "mateName": "Cylindrical 2",
+          "type": "Cylindrical",
+          "role": "rotary",
+          "featureId": "MZnrpmFxDufp4H9Iz",
+          "ownerPath": [
+            "MPpbQW9lv50xsQ2Ya"
+          ],
+          "depth": 1,
+          "drive": {
+            "axis": {
+              "origin": [
+                0.2667,
+                -0.027955,
+                0.058581
+              ],
+              "dir": [
+                1.0,
+                -0.0,
+                0.0
+              ]
+            },
+            "movingPrefixes": [
+              "MPpbQW9lv50xsQ2Ya/IHzm0qmrBDCc2TAUd",
+              "MPpbQW9lv50xsQ2Ya/IJXOhsSXlCje1ZvE/",
+              "MPpbQW9lv50xsQ2Ya/IfzQjnYNtiv965ik6",
+              "MPpbQW9lv50xsQ2Ya/Ij2JhMPzsn0/q17kt",
+              "MPpbQW9lv50xsQ2Ya/IrtgP3+idP/NaL+rl",
+              "MPpbQW9lv50xsQ2Ya/IvPq3DKk0x9ZDMNC6",
+              "MPpbQW9lv50xsQ2Ya/M1Lv/7xEXTD6XqfzK"
+            ],
+            "min": null,
+            "max": null,
+            "rest": 0.5235987755982986,
+            "limited": false
+          }
+        },
+        {
+          "mateName": "Revolute 1",
+          "type": "Revolute",
+          "role": "rotary",
+          "featureId": "MfStml+/6QtduEQNB",
+          "ownerPath": [
+            "MPpbQW9lv50xsQ2Ya"
+          ],
+          "depth": 1,
+          "drive": {
+            "axis": {
+              "origin": [
+                0.2667,
+                -0.027955,
+                0.083981
+              ],
+              "dir": [
+                1.0,
+                -0.0,
+                0.0
+              ]
+            },
+            "movingPrefixes": [
+              "MPpbQW9lv50xsQ2Ya/IHzm0qmrBDCc2TAUd",
+              "MPpbQW9lv50xsQ2Ya/IJXOhsSXlCje1ZvE/",
+              "MPpbQW9lv50xsQ2Ya/IfzQjnYNtiv965ik6",
+              "MPpbQW9lv50xsQ2Ya/Ij2JhMPzsn0/q17kt",
+              "MPpbQW9lv50xsQ2Ya/IrtgP3+idP/NaL+rl",
+              "MPpbQW9lv50xsQ2Ya/IvPq3DKk0x9ZDMNC6",
+              "MPpbQW9lv50xsQ2Ya/M1Lv/7xEXTD6XqfzK"
+            ],
+            "min": null,
+            "max": null,
+            "rest": -2.617993877991495,
+            "limited": false
+          }
+        },
+        {
+          "mateName": "Cylindrical 3",
+          "type": "Cylindrical",
+          "role": "rotary",
+          "featureId": "MrOPP3GZbbRc1M6fd",
+          "ownerPath": [
+            "MPpbQW9lv50xsQ2Ya"
+          ],
+          "depth": 1,
+          "drive": {
+            "axis": {
+              "origin": [
+                0.2667,
+                -0.088801,
+                0.054868
+              ],
+              "dir": [
+                1.0,
+                -0.0,
+                0.0
+              ]
+            },
+            "movingPrefixes": [
+              "MPpbQW9lv50xsQ2Ya/M0cHfBWO347rGt7KI",
+              "MPpbQW9lv50xsQ2Ya/MBy1BSgTCL6dhhhzv",
+              "MPpbQW9lv50xsQ2Ya/MESHLhK3jkF2gNx51",
+              "MPpbQW9lv50xsQ2Ya/MSj7cyudqDrbnNuVX",
+              "MPpbQW9lv50xsQ2Ya/MTRCgoZBUWIlnejbX",
+              "MPpbQW9lv50xsQ2Ya/MgtGh7ffXjQhehw5D",
+              "MPpbQW9lv50xsQ2Ya/MnRqGgM/xwuuQfymz"
+            ],
+            "min": null,
+            "max": null,
+            "rest": -0.5235987755982983,
+            "limited": false
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FRC 115 Robot Simulator</title>
+<style>
+  :root { --bg:#0e1116; --panel:#171c24; --accent:#9d6bd6; --accent2:#7d4bbf;
+    --text:#e6e8ec; --muted:#8b94a3; --line:#232a34; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--text);
+    font-family:-apple-system,Segoe UI,Roboto,sans-serif; overflow:hidden; }
+  #topbar { position:fixed; top:0; left:0; right:0; height:56px; display:flex; align-items:center;
+    gap:12px; padding:0 16px; background:rgba(23,28,36,.92); border-bottom:1px solid var(--line); z-index:10; }
+  #topbar .title { font-weight:700; letter-spacing:.3px; }
+  #topbar .title span { color:var(--accent); }
+  #modelName { color:var(--muted); font-size:13px; }
+  .spacer { flex:1; }
+  .btn { height:36px; padding:0 18px; border:0; border-radius:8px; background:var(--accent); color:#fff;
+    font-weight:600; cursor:pointer; font-size:14px; }
+  .btn:hover { background:var(--accent2); }
+  .btn:disabled { opacity:.5; cursor:default; }
+  .btn.ghost { background:transparent; border:1px solid var(--line); color:var(--text); }
+
+  /* panels */
+  #controls { position:fixed; left:16px; bottom:16px; width:300px; background:rgba(23,28,36,.94);
+    border:1px solid var(--line); border-radius:12px; padding:14px 16px; z-index:10; max-height:60vh; overflow:auto; }
+  #controls h3 { margin:0 0 10px; font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
+  .dof { margin:14px 0; }
+  .dof .row { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+  .dof input.name { flex:1; background:transparent; border:1px solid transparent; color:var(--text);
+    font-size:14px; font-weight:600; padding:3px 6px; border-radius:6px; }
+  .dof input.name:hover { border-color:var(--line); }
+  .dof input.name:focus { border-color:var(--accent); outline:none; background:#0f1318; }
+  .dof .val { color:var(--muted); font-size:12px; min-width:46px; text-align:right; }
+  .dof input[type=range] { width:100%; accent-color:var(--accent); }
+  #hint { position:fixed; right:16px; bottom:16px; color:var(--muted); font-size:12px; text-align:right;
+    background:rgba(23,28,36,.8); padding:8px 12px; border-radius:8px; }
+  #controls .subhead { display:flex; align-items:center; justify-content:space-between; margin:16px 0 4px; }
+  .btn.sm { height:28px; padding:0 12px; font-size:12px; border-radius:7px; }
+  .btn.active { background:#2fae6b; }
+  .sub { margin:12px 0; padding:10px; border:1px solid var(--line); border-radius:9px; background:#12161d; }
+  .sub .top { display:flex; align-items:center; gap:6px; }
+  .sub input.name { flex:1; background:transparent; border:1px solid transparent; color:var(--text);
+    font-size:13px; font-weight:600; padding:2px 5px; border-radius:5px; }
+  .sub input.name:hover { border-color:var(--line); }
+  .sub input.name:focus { border-color:var(--accent); outline:none; background:#0f1318; }
+  .sub .kind { font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted);
+    border:1px solid var(--line); border-radius:5px; padding:1px 5px; }
+  .sub .tools { display:flex; gap:6px; margin-top:7px; }
+  .iconbtn { background:transparent; border:1px solid var(--line); color:var(--muted); border-radius:6px;
+    height:24px; padding:0 8px; font-size:11px; cursor:pointer; }
+  .iconbtn:hover { color:var(--text); border-color:var(--accent); }
+  .iconbtn.on { color:#2fae6b; border-color:#2fae6b; }
+  /* selection toolbar */
+  #selbar { position:fixed; left:50%; transform:translateX(-50%); bottom:16px; z-index:20; display:none;
+    align-items:center; gap:12px; background:rgba(23,28,36,.96); border:1px solid var(--accent);
+    border-radius:12px; padding:10px 16px; box-shadow:0 10px 40px rgba(0,0,0,.5); }
+  #selbar.show { display:flex; }
+  #selbar .cnt { font-weight:700; }
+  #selbar .tip { color:var(--muted); font-size:12px; }
+  .radios { display:flex; gap:8px; margin:6px 0 2px; }
+  .radios label { flex:1; text-align:center; padding:8px 4px; border:1px solid var(--line); border-radius:8px;
+    font-size:12px; cursor:pointer; color:var(--muted); }
+  .radios input { display:none; }
+  .radios input:checked + span { color:var(--text); }
+  .radios label:has(input:checked) { border-color:var(--accent); background:#0f1318; color:var(--text); }
+  .small { font-size:12px; color:var(--muted); margin:2px 0 0; }
+
+  /* modal + overlay */
+  .backdrop { position:fixed; inset:0; background:rgba(6,8,11,.72); display:none; align-items:center;
+    justify-content:center; z-index:50; backdrop-filter:blur(3px); }
+  .backdrop.show { display:flex; }
+  .card { width:520px; max-width:92vw; background:var(--panel); border:1px solid var(--line);
+    border-radius:16px; padding:26px 28px; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+  .card h2 { margin:0 0 6px; font-size:20px; }
+  .card p { margin:0 0 18px; color:var(--muted); font-size:13px; }
+  .card input.url { width:100%; height:42px; padding:0 14px; border-radius:10px; border:1px solid var(--line);
+    background:#0f1318; color:var(--text); font-size:14px; }
+  .card .actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+  .err { color:#ff6b6b; font-size:13px; margin-top:10px; min-height:18px; }
+
+  /* progress */
+  .spinner { width:34px; height:34px; border:3px solid var(--line); border-top-color:var(--accent);
+    border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 16px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .bar { height:10px; background:#0f1318; border-radius:6px; overflow:hidden; margin:16px 0 8px; }
+  .bar-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--accent2),var(--accent));
+    transition:width .4s ease; }
+  .ov-line { display:flex; justify-content:space-between; font-size:13px; color:var(--muted); }
+  #ovMsg { text-align:center; margin-bottom:4px; font-size:14px; }
+  canvas { display:block; }
+</style>
+</head>
+<body>
+  <div id="topbar">
+    <div class="title">FRC&nbsp;<span>115</span>&nbsp;Simulator</div>
+    <span id="modelName"></span>
+    <div class="spacer"></div>
+    <span id="physTools" style="display:none; gap:8px; align-items:center;">
+      <button class="btn ghost sm" id="dropBtn" title="Drop a game piece above the robot (or shift+click a spot)">● Drop piece</button>
+      <button class="btn ghost sm" id="fillHopper" title="Pack the hopper with game pieces (click again after they settle to top it off)">▦ Fill hopper</button>
+      <button class="btn ghost sm" id="clearPieces">Clear pieces</button>
+      <button class="btn ghost sm" id="resetPhys" title="Rebuild the simulation from the CAD pose">↺ Reset</button>
+      <label class="small" style="margin:0; display:flex; align-items:center; gap:4px; cursor:pointer;"
+             title="Mechanisms always collide with each other and with game pieces. This also collides them with the fixed chassis (can jam on tight CAD clearances).">
+        <input type="checkbox" id="selfCol"> hit chassis</label>
+    </span>
+    <span id="physStatus" class="small" style="margin:0"></span>
+    <button class="btn ghost" id="physBtn" title="Simulate contacts: moving parts push game pieces and each other">⚛ Physics: off</button>
+    <button class="btn" id="openImport">Import CAD ▸</button>
+  </div>
+
+  <div id="controls">
+    <h3>Mechanisms</h3><div id="dofs"></div>
+    <div class="subhead"><h3 style="margin:0">Detected subsystems</h3></div>
+    <div id="autoSubs"></div>
+    <div class="subhead"><h3 style="margin:0">Your mechanisms</h3>
+      <span style="display:flex; gap:6px;">
+      <button class="btn ghost sm" id="hingeBtn" title="For a pivot the CAD doesn't have a mate for: click its hinge shaft and one part that swings">⟲ Pivot from hinge</button>
+      <button class="btn sm" id="defineBtn">＋ Define</button></span></div>
+    <div id="subs"></div>
+    <div class="subhead"><h3 style="margin:0">Roller sets</h3>
+      <button class="btn sm" id="newRollerSet" title="Group rollers that run together at one speed">＋ New set</button></div>
+    <label class="small" style="display:flex; gap:5px; align-items:center; cursor:pointer;"
+           title="Auto-detected rollers come from the CAD's mates and can be wrong (e.g. spinning a motor). Roller sets replace them.">
+      <input type="checkbox" id="useDetectedRollers"> also use auto-detected rollers</label>
+    <div id="rollerSets"></div>
+  </div>
+  <div id="hint">left-drag orbit • scroll zoom • right-drag pan</div>
+
+  <!-- selection toolbar (visible in select mode) -->
+  <div id="selbar">
+    <span class="cnt" id="selCnt">0 parts</span>
+    <span class="tip" id="selTip">click parts to select · shift not needed</span>
+    <span id="reachCtl" style="display:none; gap:4px; align-items:center;">
+      <button class="btn ghost sm" id="reachLess" title="Select fewer parts (one link closer to the part you clicked)">－</button>
+      <span class="small" id="reachLbl" style="white-space:nowrap">reach 0</span>
+      <button class="btn ghost sm" id="reachMore" style="white-space:nowrap" title="Select the parts one more link away">＋ grow</button></span>
+    <button class="btn sm" id="groupBtn" style="white-space:nowrap" disabled>Group as mechanism ▸</button>
+    <button class="btn ghost sm" id="clearSel">Clear</button>
+    <button class="btn ghost sm" id="exitSelect">Done</button>
+  </div>
+
+  <!-- group-as-mechanism modal -->
+  <div class="backdrop" id="groupModal">
+    <div class="card" style="width:440px;">
+      <h2>New mechanism</h2>
+      <p><span id="grpCount">0</span> parts selected. Name it and pick how it moves — we’ll fit the axis for you.</p>
+      <input class="url" id="grpName" placeholder="e.g. Left intake roller" />
+      <div class="radios" style="margin-top:14px;">
+        <label><input type="radio" name="grpType" value="roller" checked><span>Roller<br>(spins freely)</span></label>
+        <label><input type="radio" name="grpType" value="revolute"><span>Pivot<br>(arm/turret)</span></label>
+        <label><input type="radio" name="grpType" value="slider"><span>Slider<br>(elevator)</span></label>
+      </div>
+      <p class="small">Axis is auto-fit from the selected geometry. You can flip it or pick it by hand after.</p>
+      <div class="actions">
+        <button class="btn ghost" id="grpCancel">Cancel</button>
+        <button class="btn" id="grpCreate">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- pivot-from-hinge modal -->
+  <div class="backdrop" id="pivotModal">
+    <div class="card" style="width:440px;">
+      <h2>New pivot</h2>
+      <p><span id="pvCount">0</span> parts will swing about the hinge you clicked.</p>
+      <input class="url" id="pvName" placeholder="e.g. Hood" />
+      <div style="display:flex; gap:10px; margin-top:12px; align-items:center;" class="small">
+        <label>min angle <input class="url" id="pvMin" type="number" value="-30" style="width:80px"> °</label>
+        <label>max angle <input class="url" id="pvMax" type="number" value="30" style="width:80px"> °</label>
+      </div>
+      <p class="small">Angles are measured from the pose in the CAD (0° = as modeled). If it swings the wrong way, use ⇄ flip axis afterwards.</p>
+      <div class="actions">
+        <button class="btn ghost" id="pvCancel">Cancel</button>
+        <button class="btn" id="pvCreate">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import modal -->
+  <div class="backdrop" id="modal">
+    <div class="card">
+      <h2>Import an assembly</h2>
+      <p>Paste the link to an Onshape <b>assembly</b>. We’ll drive it through Onshape’s solver and bring it in here.</p>
+      <input class="url" id="url" placeholder="https://cad.onshape.com/documents/…/e/…" />
+      <div class="err" id="modalErr"></div>
+      <div class="actions">
+        <button class="btn ghost" id="cancelImport">Cancel</button>
+        <button class="btn" id="doImport">Import</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading overlay -->
+  <div class="backdrop" id="overlay">
+    <div class="card" style="width:420px; text-align:center;">
+      <div class="spinner"></div>
+      <div id="ovMsg">Starting…</div>
+      <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+      <div class="ov-line"><span id="ovPct">0%</span><span id="ovEta"></span></div>
+    </div>
+  </div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import { guessSwinging, fitHingeAxis, mirrorTwins } from '/hinge.js';
+
+const $ = (id) => document.getElementById(id);
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+// ---- three.js (Onshape is Z-up) ----
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));   // 2-3x DPI + millions of tris = slow
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0e1116);
+const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.01, 100);
+camera.up.set(0,0,1);
+const controls = new OrbitControls(camera, renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x33373d, 1.1));
+const d1 = new THREE.DirectionalLight(0xffffff, 1.4); d1.position.set(1,1,2); scene.add(d1);
+const d2 = new THREE.DirectionalLight(0xffffff, 0.6); d2.position.set(-1,-1,1); scene.add(d2);
+addEventListener('resize', () => { camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight); });
+let sim=null;          // physics simulation (null = kinematic mode)
+let lastFrame=performance.now();
+(function loop(){ requestAnimationFrame(loop);
+  const now=performance.now(), dt=Math.min(0.05,(now-lastFrame)/1000); lastFrame=now;
+  if (sim) physicsTick(dt);
+  controls.update(); renderer.render(scene, camera); })();
+
+// ---- model ----
+const loader = new STLLoader();
+let group=null, meshesByKey={}, restMat={}, model=null, currentJob=null;
+let subsystems=[], autoSubsystems=[], modelSpan=1;
+
+const matFromT = (T) => new THREE.Matrix4().set(
+  T[0],T[1],T[2],T[3], T[4],T[5],T[6],T[7], T[8],T[9],T[10],T[11], T[12],T[13],T[14],T[15]);
+
+function applyPoses(poses){
+  for (const k in poses){ const m=meshesByKey[k]; if (m){ m.matrix.copy(matFromT(poses[k])); m.matrixWorldNeedsUpdate=true; } }
+}
+function frameFor(dof, v){ let best=dof.frames[0], bd=1e9;
+  for (const f of dof.frames){ const d=Math.abs(f.val-v); if (d<bd){bd=d; best=f;} } return best; }
+
+function dofKey(i){ return `dofname:${currentJob}:${i}`; }
+function buildDofUI(){
+  const host=$('dofs'); host.innerHTML='';
+  if (!model.dofs.length){ host.innerHTML='<p class="small">No auto-detected mechanisms — define your own below.</p>'; return; }
+  model.dofs.forEach((dof,i) => {
+    const wrap=document.createElement('div'); wrap.className='dof';
+    const row=document.createElement('div'); row.className='row';
+    const name=document.createElement('input'); name.className='name'; name.title='Click to rename';
+    name.value = localStorage.getItem(dofKey(i)) || dof.name;
+    name.addEventListener('change', () => localStorage.setItem(dofKey(i), name.value));
+    const val=document.createElement('span'); val.className='val'; val.textContent=`0${dof.unit==='deg'?'°':''}`;
+    row.append(name, val);
+    const r=document.createElement('input'); r.type='range';
+    r.min=Math.min(dof.min,dof.max); r.max=Math.max(dof.min,dof.max);
+    r.step=(dof.unit==='deg')?1:0.001; r.value=0;
+    r.addEventListener('input', () => { val.textContent=`${r.value}${dof.unit==='deg'?'°':'m'}`;
+      applyPoses(frameFor(dof, +r.value).poses); });
+    wrap.append(row, r); host.append(wrap);
+  });
+}
+
+// ---------- user-defined mechanisms: kinematics ----------
+const V3 = (a) => new THREE.Vector3(a[0],a[1],a[2]);
+function rotAbout(origin, dir, rad){
+  const R=new THREE.Matrix4().makeRotationAxis(V3(dir).normalize(), rad);
+  return new THREE.Matrix4().makeTranslation(origin[0],origin[1],origin[2])
+    .multiply(R).multiply(new THREE.Matrix4().makeTranslation(-origin[0],-origin[1],-origin[2]));
+}
+function transAlong(dir, dist){ const d=V3(dir).normalize().multiplyScalar(dist);
+  return new THREE.Matrix4().makeTranslation(d.x,d.y,d.z); }
+
+function driveSub(sub, value){
+  const A = sub.type==='slider' ? transAlong(sub.axis.dir, value)
+                                : rotAbout(sub.axis.origin, sub.axis.dir, THREE.MathUtils.degToRad(value));
+  const keys=sub._marker ? [...sub.members, sub._marker] : sub.members;
+  for (const k of keys){ const m=meshesByKey[k]; if (!m || !restMat[k]) continue;
+    m.matrix.copy(A).multiply(restMat[k]); m.matrixWorldNeedsUpdate=true; }
+}
+
+// PCA: dominant axis of the selected geometry (a roller's spin axis, an arm's long axis)
+function fitAxis(keys){
+  const pts=[];
+  for (const k of keys){ const m=meshesByKey[k]; if (!m) continue; m.updateMatrixWorld();
+    const pos=m.geometry.attributes.position, step=Math.max(1, Math.floor(pos.count/250));
+    for (let i=0;i<pos.count;i+=step){ pts.push(new THREE.Vector3().fromBufferAttribute(pos,i).applyMatrix4(m.matrixWorld)); } }
+  const c=new THREE.Vector3(); pts.forEach(p=>c.add(p)); c.multiplyScalar(1/Math.max(1,pts.length));
+  let xx=0,xy=0,xz=0,yy=0,yz=0,zz=0;
+  for (const p of pts){ const dx=p.x-c.x,dy=p.y-c.y,dz=p.z-c.z;
+    xx+=dx*dx; xy+=dx*dy; xz+=dx*dz; yy+=dy*dy; yz+=dy*dz; zz+=dz*dz; }
+  const cov=[[xx,xy,xz],[xy,yy,yz],[xz,yz,zz]];
+  let v=[1,0.7,0.3];
+  for (let it=0;it<80;it++){
+    const n=[cov[0][0]*v[0]+cov[0][1]*v[1]+cov[0][2]*v[2],
+             cov[1][0]*v[0]+cov[1][1]*v[1]+cov[1][2]*v[2],
+             cov[2][0]*v[0]+cov[2][1]*v[1]+cov[2][2]*v[2]];
+    const mag=Math.hypot(n[0],n[1],n[2])||1; v=[n[0]/mag,n[1]/mag,n[2]/mag];
+  }
+  return { origin:[c.x,c.y,c.z], dir:v };
+}
+
+// ---------- axis visualization ----------
+const axisHelpers={};
+function showAxis(sub){
+  hideAxis(sub.id);
+  const o=V3(sub.axis.origin), d=V3(sub.axis.dir).normalize();
+  const L=modelSpan*0.25;
+  const g=new THREE.BufferGeometry().setFromPoints([o.clone().addScaledVector(d,-L), o.clone().addScaledVector(d,L)]);
+  const line=new THREE.Line(g, new THREE.LineBasicMaterial({color:0x2fae6b}));
+  const knob=new THREE.Mesh(new THREE.SphereGeometry(modelSpan*0.01,12,12), new THREE.MeshBasicMaterial({color:0x2fae6b}));
+  knob.position.copy(o);
+  const grp=new THREE.Group(); grp.add(line,knob); scene.add(grp); axisHelpers[sub.id]=grp;
+}
+function hideAxis(id){ if (axisHelpers[id]){ scene.remove(axisHelpers[id]); delete axisHelpers[id]; } }
+
+// ---------- roller spin markers ----------
+// A round roller spinning about its own axis looks identical frame to frame. Each roller gets a
+// circular arrow (an open ring + arrowhead) just past its end face. The marker is registered like
+// a part (meshesByKey/restMat) so the same joint transforms that turn the roller turn the arrow.
+const markerGroup=new THREE.Group(); scene.add(markerGroup);
+const SPIN_COLOR=0xffa23a;
+function removeMarker(key){
+  const m=meshesByKey[key]; if (!m) return;
+  markerGroup.remove(m); m.traverse(o=>{ o.geometry?.dispose(); });
+  delete meshesByKey[key]; delete restMat[key];
+}
+function clearMarkers(prefix){ Object.keys(meshesByKey).filter(k=>k.startsWith(prefix)).forEach(removeMarker); }
+function makeSpinMarker(key, axis, members){
+  removeMarker(key);
+  const o=V3(axis.origin), d=V3(axis.dir).normalize();
+  // roller radius + far end along the axis, measured per part from its rest geometry. Parts far
+  // off-axis compared with the rest (e.g. a motor's wiring board modeled in the same rigid
+  // group) are ignored so the arrow hugs the actual roller.
+  const per=[];
+  const p=new THREE.Vector3(), rel=new THREE.Vector3();
+  for (const k of members){ const m=meshesByKey[k]; if (!m || !restMat[k]) continue;
+    const pos=m.geometry.attributes.position, step=Math.max(1, Math.floor(pos.count/300));
+    let r=0, tm=-Infinity;
+    for (let i=0;i<pos.count;i+=step){ p.fromBufferAttribute(pos,i).applyMatrix4(restMat[k]);
+      rel.subVectors(p,o); const t=rel.dot(d); tm=Math.max(tm,t);
+      r=Math.max(r, rel.addScaledVector(d,-t).length()); }
+    if (pos.count) per.push({r, tm}); }
+  if (!per.length) return null;
+  const med=[...per].sort((a,b)=>a.r-b.r)[Math.floor(per.length/2)].r;
+  const kept=per.filter(x=>x.r<=med*3);
+  const R=Math.max(Math.max(...kept.map(x=>x.r))*1.2, modelSpan*0.012);
+  const tmax=Math.max(...kept.map(x=>x.tm));
+  const tube=R*0.09, arc=Math.PI*1.6;
+  const mat=new THREE.MeshBasicMaterial({color:SPIN_COLOR, transparent:true, opacity:0.55});
+  const g=new THREE.Group();
+  g.add(new THREE.Mesh(new THREE.TorusGeometry(R, tube, 8, 48, arc), mat));
+  const head=new THREE.Mesh(new THREE.ConeGeometry(tube*2.6, tube*6, 12), mat);
+  head.position.set(R*Math.cos(arc), R*Math.sin(arc), 0); head.rotation.z=arc;  // points along +rotation
+  g.add(head);
+  const spoke=new THREE.Mesh(new THREE.BoxGeometry(R, tube*1.2, tube*1.2), mat);   // radial tick
+  spoke.position.set(R/2, 0, 0); g.add(spoke);
+  // local Z = roller axis; sit just beyond the roller's end face
+  const u=new THREE.Vector3(1,0,0); if (Math.abs(u.dot(d))>0.9) u.set(0,1,0);
+  u.addScaledVector(d,-u.dot(d)).normalize(); const v=new THREE.Vector3().crossVectors(d,u);
+  const T=new THREE.Matrix4().makeBasis(u,v,d)
+    .setPosition(o.clone().addScaledVector(d, tmax + R*0.25));
+  g.matrixAutoUpdate=false; g.matrix.copy(T); g.userData.mat=mat;
+  markerGroup.add(g); meshesByKey[key]=g; restMat[key]=T.clone();
+  return key;
+}
+// spinning = bright arrow + warm glow on the roller's parts
+function setSpinLook(markerKey, members, on){
+  const mk=meshesByKey[markerKey]; if (mk) mk.userData.mat.opacity=on?1:0.55;
+  for (const k of members){ const m=meshesByKey[k]; if (!m) continue;
+    if (m.userData.orig){                       // selected: selection highlight wins for now
+      if (!on && m.userData.spinOrig){ m.userData.orig=m.userData.spinOrig; m.userData.spinOrig=null; }
+      continue; }
+    if (on){ if (!m.userData.spinOrig){ m.userData.spinOrig=m.material; m.material=m.material.clone(); }
+      m.material.emissive=new THREE.Color(SPIN_COLOR); m.material.emissiveIntensity=0.35; }
+    else if (m.userData.spinOrig){ m.material.dispose?.(); m.material=m.userData.spinOrig; m.userData.spinOrig=null; } }
+}
+
+// ---------- selection ----------
+let selectMode=false, pickAxisFor=null, pickPts=[];
+const selected=new Set();
+const ray=new THREE.Raycaster();
+
+function highlight(m, on){
+  if (on){ if (!m.userData.orig){ m.userData.orig=m.material; m.material=m.material.clone(); }
+    m.material.emissive=new THREE.Color(0x9d6bd6); m.material.emissiveIntensity=0.85; }
+  else if (m.userData.orig){ m.material.dispose?.(); m.material=m.userData.orig; m.userData.orig=null; }
+}
+function pickMesh(ev){
+  const r=renderer.domElement.getBoundingClientRect();
+  const mo=new THREE.Vector2(((ev.clientX-r.left)/r.width)*2-1, -((ev.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(mo, camera);
+  const hits=ray.intersectObjects(group.children, false);
+  return hits.length ? hits[0] : null;
+}
+function updSelBar(){
+  $('selCnt').textContent = `${selected.size} part${selected.size!==1?'s':''}`;
+  $('groupBtn').disabled = selected.size===0;
+}
+function clearSelection(){ selected.forEach(k=>highlight(meshesByKey[k],false)); selected.clear(); updSelBar(); }
+function enterSelect(){ selectMode=true; $('selbar').classList.add('show');
+  $('defineBtn').classList.add('active'); $('hint').style.display='none'; }
+function exitSelect(){ selectMode=false; pickAxisFor=null; clearSelection(); endHingeFlow();
+  pendingRollerSet=null; $('groupBtn').textContent='Group as mechanism ▸';
+  $('selbar').classList.remove('show'); $('defineBtn').classList.remove('active'); $('hint').style.display=''; }
+
+// ---------- whole-sub-assembly selection (alt+click) ----------
+// A roller is often its own sub-assembly of dozens of parts (a WCP stub roller is 38). Alt+click
+// selects the smallest sub-assembly containing the part; alt+click again goes up a level.
+function partsUnder(prefix){        // prefix: array of instance ids
+  const n=prefix.length, out=[];
+  for (const [k,path] of Object.entries(model.partPaths||{}))
+    if (path.length>n && prefix.every((id,i)=>path[i]===id) && meshesByKey[k]) out.push(k);
+  return out;
+}
+function selectGroupOf(k){
+  const path=(model.partPaths||{})[k]; if (!path || path.length<2) return false;
+  for (let n=path.length-1; n>=1; n--){
+    const group=partsUnder(path.slice(0,n));
+    if (group.every(x=>selected.has(x))) continue;          // already fully selected: go up
+    for (const x of group) if (!selected.has(x)){ selected.add(x); highlight(meshesByKey[x],true); }
+    updSelBar();
+    $('selTip').textContent=`selected “${(model.occNames||{})[path.slice(0,n).join('/')]||'sub-assembly'}” (${group.length} parts) · alt+click again for the next level up`;
+    return true;
+  }
+  return false;
+}
+// name of the sub-assembly exactly covered by `keys`, if any (used to name rollers)
+function groupNameOf(keys){
+  const paths=keys.map(k=>(model.partPaths||{})[k]).filter(Boolean); if (paths.length!==keys.length || !paths.length) return null;
+  let n=0; while (paths.every(p=>p.length>n+1 && p[n]===paths[0][n])) n++;
+  if (!n) return null;
+  const prefix=paths[0].slice(0,n);
+  return partsUnder(prefix).length===keys.length ? (model.occNames||{})[prefix.join('/')] : null;
+}
+
+// click vs drag discrimination (so orbit still works)
+let downXY=null;
+renderer.domElement.addEventListener('pointerdown', e=>{ downXY=[e.clientX,e.clientY]; });
+renderer.domElement.addEventListener('pointerup', e=>{
+  if (!downXY) return; const moved=Math.hypot(e.clientX-downXY[0], e.clientY-downXY[1]); downXY=null;
+  if (moved>5 || (!selectMode && !pickAxisFor)) return;
+  const hit=pickMesh(e); if (!hit) return;
+  if (pickAxisFor){ pickPts.push(hit.point.clone());
+    if (pickPts.length===2){ const sub=pickAxisFor;
+      sub.axis={ origin:[pickPts[0].x,pickPts[0].y,pickPts[0].z],
+                 dir:[pickPts[1].x-pickPts[0].x, pickPts[1].y-pickPts[0].y, pickPts[1].z-pickPts[0].z] };
+      pickAxisFor=null; pickPts=[]; $('selTip').textContent='axis set — drag its slider to test';
+      showAxis(sub); if (sub.type==='roller') refreshUserMarker(sub); saveSubs(); }
+    return;
+  }
+  const k=hit.object.userData.key;
+  if (hingeFlow && hingeFlow.step!=='edit'){ hingeClick(k); return; }
+  if (e.altKey && selectGroupOf(k)) return;
+  if (selected.has(k)){ selected.delete(k); highlight(hit.object,false); }
+  else { selected.add(k); highlight(hit.object,true); }
+  updSelBar();
+});
+
+// ---------- pivot from hinge ----------
+// For a pivot the CAD has no mate for (e.g. a hood fastened in place): 1) click the hinge shaft,
+// bolt, bearing or spacer -> exact axis from its geometry; 2) click one part that swings -> the
+// parts that move with it are guessed from contacts (hinge.js); 3) fix the guess, set limits.
+let hingeFlow=null;
+function partWorldPts(k){
+  const m=meshesByKey[k]; if (!m || !restMat[k]) return null;
+  const pos=m.geometry.attributes.position, e=restMat[k].elements, out=new Float32Array(pos.count*3);
+  for (let i=0;i<pos.count;i++){ const x=pos.getX(i), y=pos.getY(i), z=pos.getZ(i);
+    out[i*3]=e[0]*x+e[4]*y+e[8]*z+e[12]; out[i*3+1]=e[1]*x+e[5]*y+e[9]*z+e[13]; out[i*3+2]=e[2]*x+e[6]*y+e[10]*z+e[14]; }
+  return out;
+}
+function endHingeFlow(){ if (!hingeFlow) return; hideAxis('hinge-tmp');
+  if (hingeFlow.hingeMesh) highlight(hingeFlow.hingeMesh,false);
+  hingeFlow=null; $('groupBtn').textContent='Group as mechanism ▸'; $('reachCtl').style.display='none'; }
+function startHingeFlow(){
+  if (selectMode) exitSelect();
+  enterSelect(); hingeFlow={ step:'hinge' };
+  $('groupBtn').textContent='Create pivot ▸'; $('groupBtn').disabled=true;
+  $('selTip').textContent='Step 1/3: click the shaft, bolt, bearing or spacer the mechanism swings on';
+}
+function topOf(k){ return ((model.partPaths||{})[k]||[k.split('/')[0]])[0]; }
+function hingeGuess(seed){
+  const f=hingeFlow;
+  const tops=new Set([seed, ...f.hingeKeys].map(topOf)), parts=[];
+  for (const key of Object.keys(meshesByKey)){
+    if (!tops.has(topOf(key)) || isPieceKey(key)) continue;
+    const pts=partWorldPts(key); if (pts) parts.push({ key, name:(model.partNames||{})[key]||'', pts });
+  }
+  // a hood/arm has a left and a right plate: start from the clicked part AND its mirror twin
+  const seeds=[seed, ...mirrorTwins(parts, [seed], f.axis)];
+  // a sub-assembly (a roller, a motor) moves as a unit: its id = the 2nd level of its path
+  const groupOf=(key)=>{ const p=(model.partPaths||{})[key]; return p && p.length>=3 ? p.slice(0,2).join('/') : null; };
+  return guessSwinging({ parts, axis:f.axis, hingeKeys:f.hingeKeys, seedKeys:seeds, groupOf });
+}
+// Selection = parts within `reach` links of the clicked part, plus the user's own edits. When
+// the guess floods into the frame (the CAD has the mechanism bolted solid), start at reach 0 --
+// the clicked part, its twin and their fasteners -- and let the user grow it.
+function hingeSync(){             // fold manual clicks since the last apply into the overrides
+  const f=hingeFlow; if (!f.base) return;
+  for (const k of selected) if (!f.base.has(k)){ f.add.add(k); f.rem.delete(k); }
+  for (const k of f.base) if (!selected.has(k)){ f.rem.add(k); f.add.delete(k); }
+}
+function hingeApply(){
+  const f=hingeFlow; const hops=f.g.hops;
+  const base=new Set(Object.keys(hops).filter(k=>hops[k]<=f.reach));
+  clearSelection();
+  for (const k of base) if (!f.rem.has(k)){ selected.add(k); highlight(meshesByKey[k],true); }
+  for (const k of f.add) if (!selected.has(k) && meshesByKey[k]){ selected.add(k); highlight(meshesByKey[k],true); }
+  f.base=new Set(selected); updSelBar(); $('groupBtn').disabled=selected.size===0;
+  const maxR=Math.max(0, ...Object.values(hops).filter(Number.isFinite));
+  $('reachLbl').textContent = f.reach>=maxR ? 'reach: all' : `reach ${f.reach}`;
+  $('reachMore').disabled = f.reach>=maxR; $('reachLess').disabled = f.reach<=0;
+}
+$('reachMore').onclick=()=>{ const f=hingeFlow; if (!f?.g) return; hingeSync();
+  const maxR=Math.max(0, ...Object.values(f.g.hops).filter(Number.isFinite)); f.reach=Math.min(maxR, f.reach+1); hingeApply(); };
+$('reachLess').onclick=()=>{ const f=hingeFlow; if (!f?.g) return; hingeSync();
+  const maxR=Math.max(0, ...Object.values(f.g.hops).filter(Number.isFinite)); f.reach=Math.max(0, Math.min(f.reach, maxR)-1); hingeApply(); };
+function hingeClick(k){
+  const f=hingeFlow;
+  if (f.step==='hinge'){
+    const pts=partWorldPts(k); const ax=pts && fitHingeAxis([pts]);
+    if (!ax){ $('selTip').textContent='couldn’t fit an axis to that part — click a round part at the hinge'; return; }
+    f.hingeKeys=[k]; f.axis=ax; f.hingeMesh=meshesByKey[k]; highlight(f.hingeMesh,true);
+    showAxis({ id:'hinge-tmp', axis:ax });
+    f.step='seed';
+    $('selTip').textContent='Step 2/3: click one part of the thing that swings';
+    return;
+  }
+  if (f.step==='seed'){
+    highlight(f.hingeMesh,false); f.hingeMesh=null; f.step='busy';
+    $('selTip').textContent='finding the parts that move with it…';
+    setTimeout(()=>{        // let the tip paint first
+      const g=hingeGuess(k);
+      f.g=g; f.add=new Set(); f.rem=new Set(); f.base=null;
+      f.reach = g.leaked ? 0 : Infinity;
+      f.step='edit'; $('reachCtl').style.display='inline-flex';
+      hingeApply();
+      $('selTip').textContent = g.leaked
+        ? 'Step 3/3: it’s bolted solid to the frame in the CAD, so only it, its mirror twin and their fasteners are selected. ＋ grow or click parts to add (alt+click = sub-assembly)'
+        : 'Step 3/3: glowing parts will swing — click to add/remove (alt+click = sub-assembly), then Create pivot';
+    }, 30);
+  }
+}
+$('hingeBtn').onclick=startHingeFlow;
+function openPivotModal(){
+  $('pvCount').textContent=selected.size; $('pvName').value='';
+  $('pivotModal').classList.add('show'); $('pvName').focus();
+}
+$('pvCancel').onclick=()=>$('pivotModal').classList.remove('show');
+$('pvCreate').onclick=()=>{
+  const members=[...selected];
+  let lo=+$('pvMin').value, hi=+$('pvMax').value;
+  if (!(lo<hi)) { lo=-30; hi=30; }
+  const name=$('pvName').value.trim() || 'Pivot';
+  const id='h'+Math.abs([...name].reduce((a,c)=>a*31+c.charCodeAt(0)|0,members.length))+'_'+members.length;
+  const sub={ id, name, type:'revolute', members, axis:hingeFlow.axis, min:lo, max:hi, hinge:hingeFlow.hingeKeys };
+  subsystems.push(sub); saveSubs(); renderSubs(); showAxis(sub);
+  $('pivotModal').classList.remove('show'); exitSelect();
+};
+
+// ---------- subsystem list UI ----------
+function renderSubs(){
+  const host=$('subs'); host.innerHTML='';
+  clearMarkers('spin:user:');
+  for (const sub of subsystems) if (sub.type==='roller') refreshUserMarker(sub);
+  if (!subsystems.length){ host.innerHTML='<p class="small">None yet. Click ＋ Define, select parts, and group them.</p>'; }
+  subsystems.forEach(sub => {
+    const box=document.createElement('div'); box.className='sub';
+    const top=document.createElement('div'); top.className='top';
+    const name=document.createElement('input'); name.className='name'; name.value=sub.name;
+    name.addEventListener('change',()=>{ sub.name=name.value; saveSubs(); });
+    const kind=document.createElement('span'); kind.className='kind'; kind.textContent=sub.type;
+    top.append(name, kind); box.append(top);
+
+    const isSlider=sub.type==='slider';
+    const row=document.createElement('div'); row.className='row'; row.style.marginTop='6px';
+    const val=document.createElement('span'); val.className='val';
+    const rng=document.createElement('input'); rng.type='range';
+    rng.min=sub.min ?? (isSlider?-0.5:-180); rng.max=sub.max ?? (isSlider?0.5:180); rng.step=isSlider?0.005:1; rng.value=0;
+    const unit=isSlider?'m':'°';
+    val.textContent=`0${unit}`;
+    rng.value=sub._val||0; val.textContent=`${(+rng.value).toFixed(isSlider?3:0)}${unit}`;
+    rng.addEventListener('input',()=>{ val.textContent=`${(+rng.value).toFixed(isSlider?3:0)}${unit}`;
+      sub._val=+rng.value; if (sim) sim.setTarget('user:'+sub.id, sub._val); else driveSub(sub,sub._val); });
+    const rrow=document.createElement('div'); rrow.style.display='flex'; rrow.style.alignItems='center'; rrow.style.gap='6px';
+    rrow.append(rng, val); box.append(rrow);
+
+    const tools=document.createElement('div'); tools.className='tools';
+    const flip=document.createElement('button'); flip.className='iconbtn'; flip.textContent='⇄ flip axis';
+    flip.onclick=()=>{ sub.axis.dir=sub.axis.dir.map(x=>-x); showAxis(sub); refreshUserMarker(sub); saveSubs(); };
+    const pick=document.createElement('button'); pick.className='iconbtn'; pick.textContent='✎ pick axis';
+    pick.onclick=()=>{ if(!selectMode) enterSelect(); pickAxisFor=sub; pickPts=[];
+      $('selTip').textContent='click two points to set the axis'; };
+    const showA=document.createElement('button'); showA.className='iconbtn'; showA.textContent='◎ axis';
+    showA.onclick=()=>{ if(axisHelpers[sub.id]){ hideAxis(sub.id); showA.classList.remove('on'); }
+      else { showAxis(sub); showA.classList.add('on'); } };
+    const del=document.createElement('button'); del.className='iconbtn'; del.textContent='🗑';
+    del.onclick=()=>{ driveSub(sub,0); hideAxis(sub.id); setSpinLook(sub._marker, sub.members, false);
+      if (sub._marker) removeMarker(sub._marker);
+      subsystems=subsystems.filter(s=>s!==sub); saveSubs(); renderSubs(); };
+    if (sub.type==='roller'){
+      const spin=document.createElement('button'); spin.className='iconbtn'; spin.textContent='▶ spin';
+      spin.onclick=()=>{ sub._spin=!sub._spin; spin.classList.toggle('on',sub._spin);
+        spin.textContent=sub._spin?'⏸ spin':'▶ spin'; setSpinLook(sub._marker, sub.members, sub._spin);
+        if (sim) sim.setSpin('user:'+sub.id, sub._spin ? SPIN_DPS : 0); };
+      tools.append(spin);
+    }
+    tools.append(flip, pick, showA, del); box.append(tools);
+    host.append(box);
+  });
+}
+// ---------- detected subsystems: drivable joints read from the CAD mates ----------
+// Each joint carries its world axis, the parts it moves, its CAD limits and rest value.
+// Joints compose: a part's pose = A(parent) · A(child) · rest, so a roller riding on an arm
+// follows the arm. Children are the joints that move fewer parts, so apply smallest first.
+let autoJoints=[];
+function jointMatrix(j){
+  const d=j.value-j.rest;
+  return j.type==='slider' ? transAlong(j.axis.dir, d)
+                           : rotAbout(j.axis.origin, j.axis.dir, THREE.MathUtils.degToRad(d));
+}
+// every kinematic joint: detected mechanisms + the user's rollers, children (fewer parts) first
+function kinJoints(){ return [...autoJoints, ...rollerJoints].sort((a,b)=>a.size-b.size); }
+function applyAutoJoints(keys){
+  const js=kinJoints(), mats=js.map(jointMatrix);
+  for (const k of keys){ const m=meshesByKey[k]; if (!m || !restMat[k]) continue;
+    const M=restMat[k].clone();
+    js.forEach((j,i)=>{ if (j.memberSet.has(k)) M.premultiply(mats[i]); });
+    m.matrix.copy(M); m.matrixWorldNeedsUpdate=true; }
+}
+function fmtJoint(j){ return j.type==='slider' ? `${j.value.toFixed(3)} m` : `${Math.round(j.value)}°`; }
+
+function refreshUserMarker(sub){
+  sub._marker=makeSpinMarker(`spin:user:${sub.id}`, sub.axis, sub.members);
+  if (sub._ang) driveSub(sub, sub._ang);           // keep the arrow in step with the roller
+}
+
+function renderAutoSubsystems(){
+  const host=$('autoSubs'); host.innerHTML='';
+  Object.keys(axisHelpers).filter(id=>id.startsWith('auto:')).forEach(hideAxis);
+  clearMarkers('spin:auto:');
+  autoJoints=[]; hiddenRollers=0;
+  if (!autoSubsystems.length){ host.innerHTML='<p class="small">No movable mates detected.</p>'; return; }
+  autoSubsystems.forEach((sub,si) => {
+    const box=document.createElement('div'); box.className='sub';
+    const title=document.createElement('div'); title.className='top'; title.textContent=sub.name;
+    const detail=document.createElement('div'); detail.className='small';
+    detail.textContent=sub.partCount == null
+      ? `${sub.joints.join(', ')}${sub.linked ? ' · linked assembly' : ''}`
+      : `${sub.partCount} moving parts${sub.linked ? ' · linked assembly' : ''}`;
+    box.append(title,detail);
+    (sub.mechanisms||[]).forEach((mech,mi) => {
+      if (mech.continuous && !useDetectedRollers()){ hiddenRollers++; return; }
+      const j={...mech, id:`auto:${si}:${mi}`, value:mech.rest, members:[...mech.members],
+               size:mech.members.length, memberSet:new Set(mech.members), _spin:false};
+      j.freeKey=`free:${currentJob}:${sub.name}:${mech.name}`;
+      try { j.free = localStorage.getItem(j.freeKey)==='1'; } catch(e){ j.free=false; }
+      if (j.continuous){
+        j.parts=mech.members;
+        j.marker=makeSpinMarker(`spin:${j.id}`, j.axis, mech.members);
+        if (j.marker){ j.members.push(j.marker); j.memberSet.add(j.marker); }
+      }
+      autoJoints.push(j);
+      const head=document.createElement('div'); head.className='top'; head.style.marginTop='8px';
+      const nm=document.createElement('span'); nm.style.flex='1'; nm.style.fontSize='12px'; nm.textContent=j.name;
+      const kind=document.createElement('span'); kind.className='kind';
+      kind.textContent=j.continuous?'roller':j.type;
+      head.append(nm,kind);
+      const rng=document.createElement('input'); rng.type='range'; rng.style.flex='1';
+      rng.min=Math.min(j.min,j.max); rng.max=Math.max(j.min,j.max);
+      rng.step=j.type==='slider'?0.001:1; rng.value=j.value;
+      const val=document.createElement('span'); val.className='val'; val.textContent=fmtJoint(j);
+      const set=(v)=>{ j.value=v; rng.value=v; val.textContent=fmtJoint(j);
+        if (sim) sim.setTarget(j.id, v); else applyAutoJoints(j.members); };
+      j._set=set; j._rng=rng; j._val=val;
+      rng.addEventListener('input',()=>set(+rng.value));
+      const rrow=document.createElement('div'); rrow.style.display='flex'; rrow.style.alignItems='center'; rrow.style.gap='6px';
+      rrow.append(rng,val);
+      const tools=document.createElement('div'); tools.className='tools';
+      if (j.continuous){
+        const spin=document.createElement('button'); spin.className='iconbtn'; spin.textContent='▶ spin';
+        spin.onclick=()=>{ j._spin=!j._spin; renderSpinState(); };
+        tools.append(spin);
+      } else {
+        const lo=document.createElement('button'); lo.className='iconbtn'; lo.textContent='⇤ min';
+        lo.onclick=()=>set(+rng.min);
+        const hi=document.createElement('button'); hi.className='iconbtn'; hi.textContent='max ⇥';
+        hi.onclick=()=>set(+rng.max);
+        // driven = a motor follows the slider; free = unpowered, only pushed by contacts/gravity
+        const fr=document.createElement('button'); fr.className='iconbtn';
+        fr.title='Free: no motor -- in physics this joint is only moved by whatever pushes it (e.g. a hopper the intake shoves)';
+        j._renderFree=()=>{ fr.textContent=j.free?'○ free':'⚙ driven'; fr.classList.toggle('on',!j.free);
+          rng.disabled=!!(sim && j.free); };
+        fr.onclick=()=>{ j.free=!j.free; try { localStorage.setItem(j.freeKey, j.free?'1':'0'); } catch(e){}
+          if (sim){ sim.setFree(j.id, j.free); if (!j.free) sim.setTarget(j.id, j.value); }
+          j._renderFree(); };
+        j._renderFree();
+        tools.append(lo,hi,fr);
+      }
+      const reset=document.createElement('button'); reset.className='iconbtn'; reset.textContent='↺ rest';
+      reset.onclick=()=>{ j._spin=false; set(j.rest); renderSpinState(); };
+      const showA=document.createElement('button'); showA.className='iconbtn'; showA.textContent='◎ axis';
+      showA.onclick=()=>{ if(axisHelpers[j.id]){ hideAxis(j.id); showA.classList.remove('on'); }
+        else { showAxis(j); showA.classList.add('on'); } };
+      tools.append(reset,showA);
+      j._renderSpin=()=>{ const b=tools.querySelector('button'); if (j.continuous && b){
+        b.classList.toggle('on',j._spin); b.textContent=j._spin?'⏸ spin':'▶ spin';
+        setSpinLook(j.marker, j.parts, j._spin);
+        if (sim) sim.setSpin(j.id, j._spin ? SPIN_DPS : 0); } };
+      box.append(head,rrow,tools);
+    });
+    host.append(box);
+  });
+  autoJoints.sort((a,b)=>a.size-b.size);   // children before parents
+  // a roller riding on a bigger moving body (e.g. an intake arm): its marker rides along too
+  for (const j of autoJoints){ if (!j.marker) continue;
+    for (const p of autoJoints){ if (p!==j && p.size>j.size && j.parts.every(k=>p.memberSet.has(k))){
+      p.members.push(j.marker); p.memberSet.add(j.marker); } } }
+  if (hiddenRollers){ const n=document.createElement('p'); n.className='small';
+    n.textContent=`${hiddenRollers} auto-detected roller${hiddenRollers>1?'s':''} hidden — define rollers in Roller sets below.`;
+    host.append(n); }
+}
+function renderSpinState(){ autoJoints.forEach(j=>j._renderSpin&&j._renderSpin()); }
+
+// ---------- roller sets (user-defined) ----------
+// A set = rollers that run together at one RPS. Each roller is the parts the user clicked, an
+// axis fitted to them, and a direction (+1 aligned / -1 opposed). Axis signs are canonicalised
+// (dominant component positive) so parallel rollers start out "aligned" with each other.
+let rollerSets=[], rollerJoints=[], pendingRollerSet=null, hiddenRollers=0;
+const VIS_MAX_RPS=2;          // on-screen spin is capped (a 30 rps roller just strobes at 60 fps)
+function useDetectedRollers(){ const el=$('useDetectedRollers'); return el ? el.checked : true; }
+
+function eigenSym3(a){        // Jacobi eigen-decomposition of a symmetric 3x3
+  const A=a.map(r=>r.slice()), V=[[1,0,0],[0,1,0],[0,0,1]];
+  for (let sweep=0; sweep<30; sweep++){
+    const off=Math.abs(A[0][1])+Math.abs(A[0][2])+Math.abs(A[1][2]); if (off<1e-14) break;
+    for (const [p,q] of [[0,1],[0,2],[1,2]]){
+      if (Math.abs(A[p][q])<1e-18) continue;
+      const th=(A[q][q]-A[p][p])/(2*A[p][q]), t=(th>=0?1:-1)/(Math.abs(th)+Math.sqrt(th*th+1));
+      const c=1/Math.sqrt(t*t+1), sn=t*c;
+      for (let k=0;k<3;k++){ const akp=A[k][p], akq=A[k][q]; A[k][p]=c*akp-sn*akq; A[k][q]=sn*akp+c*akq; }
+      for (let k=0;k<3;k++){ const apk=A[p][k], aqk=A[q][k]; A[p][k]=c*apk-sn*aqk; A[q][k]=sn*apk+c*aqk; }
+      for (let k=0;k<3;k++){ const vkp=V[k][p], vkq=V[k][q]; V[k][p]=c*vkp-sn*vkq; V[k][q]=sn*vkp+c*vkq; }
+    } }
+  return [0,1,2].map(i=>({ val:A[i][i], vec:[V[0][i],V[1][i],V[2][i]] })).sort((x,y)=>y.val-x.val);
+}
+// Where the axis passes through: fit a circle to the roller's cross-section (all points projected
+// onto the plane perpendicular to the axis), then refit on the OUTER surface only. The vertex
+// centroid is NOT on the axis: CAD meshes are dense around bores, grooves and end features, which
+// put a drum roller's centroid 10 mm off-axis and made it wobble instead of spinning in place.
+function circleCenter(pts, c, d){
+  const D=new THREE.Vector3(...d).normalize();
+  const U=new THREE.Vector3(1,0,0); if (Math.abs(U.dot(D))>0.9) U.set(0,1,0);
+  U.addScaledVector(D,-U.dot(D)).normalize(); const V=new THREE.Vector3().crossVectors(D,U);
+  const xy=pts.map(p=>{ const r=p.clone().sub(c); return [r.dot(U), r.dot(V)]; });
+  const fit=(sel)=>{     // algebraic (Kasa) least-squares circle: x²+y² = 2ax + 2by + k
+    let sxx=0,sxy=0,syy=0,sx=0,sy=0,n=0,sxz=0,syz=0,sz=0;
+    for (const [x,y] of sel){ const z=x*x+y*y; sxx+=x*x; sxy+=x*y; syy+=y*y; sx+=x; sy+=y; n++; sxz+=x*z; syz+=y*z; sz+=z; }
+    const M=[[2*sxx,2*sxy,sx],[2*sxy,2*syy,sy],[2*sx,2*sy,n]], b=[sxz,syz,sz];
+    const det=(m)=>m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+    const D0=det(M); if (Math.abs(D0)<1e-18) return null;
+    const col=(i)=>M.map((r,ri)=>r.map((v,ci)=>ci===i?b[ri]:v));
+    return [det(col(0))/D0, det(col(1))/D0];
+  };
+  let ctr=fit(xy); if (!ctr) return null;
+  for (let it=0; it<3; it++){            // keep only the outer shell and refit
+    const rr=xy.map(([x,y])=>Math.hypot(x-ctr[0], y-ctr[1])), R=Math.max(...rr);
+    const outer=xy.filter((_,i)=>rr[i]>0.85*R); if (outer.length<8) break;
+    const nc=fit(outer); if (!nc) break; ctr=nc;
+  }
+  // only trust it if the outer surface really is round about that centre
+  const rr=xy.map(([x,y])=>Math.hypot(x-ctr[0], y-ctr[1])), R=Math.max(...rr);
+  const outer=rr.filter(r=>r>0.85*R), mean=outer.reduce((a,b)=>a+b,0)/outer.length;
+  const sd=Math.sqrt(outer.reduce((a,r)=>a+(r-mean)**2,0)/outer.length);
+  if (!(R>0) || sd/mean>0.08) return null;
+  return c.clone().addScaledVector(U,ctr[0]).addScaledVector(V,ctr[1]);
+}
+const ROLLER_FIT_VERSION=2;
+// Roller axis from its geometry: a long roller's axis is its LONGEST principal direction; a
+// wheel/disc-like roller's axis is its SHORTEST one. It passes through the cross-section's
+// circle centre (falling back to the centroid if the selection isn't round).
+function fitRollerAxis(keys){
+  const pts=[];
+  for (const k of keys){ const m=meshesByKey[k]; if (!m || !restMat[k]) continue;
+    const pos=m.geometry.attributes.position, step=Math.max(1, Math.floor(pos.count/400));
+    for (let i=0;i<pos.count;i+=step) pts.push(new THREE.Vector3().fromBufferAttribute(pos,i).applyMatrix4(restMat[k])); }
+  const c=new THREE.Vector3(); pts.forEach(p=>c.add(p)); c.multiplyScalar(1/Math.max(1,pts.length));
+  const C=[[0,0,0],[0,0,0],[0,0,0]];
+  for (const p of pts){ const d=[p.x-c.x,p.y-c.y,p.z-c.z];
+    for (let i=0;i<3;i++) for (let j=0;j<3;j++) C[i][j]+=d[i]*d[j]; }
+  const [e1,e2,e3]=eigenSym3(C);
+  let dir = (e1.val-e2.val) >= (e2.val-e3.val) ? e1.vec : e3.vec;      // long vs disc-like
+  const big=[0,1,2].reduce((b,i)=>Math.abs(dir[i])>Math.abs(dir[b])?i:b,0);
+  if (dir[big]<0) dir=dir.map(x=>-x);                                     // canonical sign
+  const o=circleCenter(pts, c, dir) || c;
+  return { origin:[o.x,o.y,o.z], dir };
+}
+
+// Exact collision cylinder for a roller: its extent along the axis and outer radius about it.
+// (Physics uses this instead of per-part hulls -- a lumpy hull spinning at 60+ rps acts like a
+// cam and flings each game piece somewhere different.)
+function rollerCylinder(axis, keys){
+  const o=new THREE.Vector3(...axis.origin), d=new THREE.Vector3(...axis.dir).normalize();
+  const p=new THREE.Vector3(); let tmin=Infinity, tmax=-Infinity, R=0;
+  for (const k of keys){ const m=meshesByKey[k]; if (!m || !restMat[k]) continue;
+    const pos=m.geometry.attributes.position;
+    for (let i=0;i<pos.count;i++){ p.fromBufferAttribute(pos,i).applyMatrix4(restMat[k]).sub(o);
+      const t=p.dot(d); if (t<tmin) tmin=t; if (t>tmax) tmax=t;
+      const r=p.addScaledVector(d,-t).length(); if (r>R) R=r; } }
+  return R>0 && tmax>tmin ? { type:'cylinder', radius:R, tmin, tmax } : null;
+}
+function refitOldRollers(){
+  let changed=false;
+  for (const set of rollerSets) for (const r of set.rollers){
+    if ((r.fit||1) >= ROLLER_FIT_VERSION) continue;
+    const members=r.members.filter(k=>meshesByKey[k]); if (!members.length) continue;
+    r.axis=fitRollerAxis(members); r.fit=ROLLER_FIT_VERSION; changed=true;
+  }
+  if (changed) saveRollerSets();
+}
+function rebuildRollerJoints(){
+  clearMarkers('spin:roll:');
+  Object.keys(axisHelpers).filter(id=>id.startsWith('roll:')).forEach(hideAxis);
+  const old=new Map(rollerJoints.map(j=>[j.id,j.value]));
+  for (const j of rollerJoints) setSpinLook(j.marker, j.parts, false);
+  rollerJoints=[];
+  for (const set of rollerSets) for (const r of set.rollers){
+    const id=`roll:${set.id}:${r.id}`;
+    const members=r.members.filter(k=>meshesByKey[k]);
+    if (!members.length) continue;
+    const j={ id, type:'pivot', continuous:true, rest:0, value:old.get(id)||0, set, roller:r,
+              axis:{ origin:r.axis.origin, dir:r.axis.dir.map(x=>x*(r.dir||1)) },
+              parts:members, members:[...members], size:members.length, memberSet:new Set(members) };
+    j.marker=makeSpinMarker(`spin:${id}`, j.axis, members);
+    if (j.marker){ j.members.push(j.marker); j.memberSet.add(j.marker); }
+    j.shape=rollerCylinder(j.axis, members);
+    rollerJoints.push(j);
+  }
+  // a roller riding on a detected mechanism (intake rollers on the arm): its arrow rides too
+  for (const j of rollerJoints) if (j.marker) for (const p of autoJoints)
+    if (p.size>j.size && j.parts.every(k=>p.memberSet.has(k))){ p.members.push(j.marker); p.memberSet.add(j.marker); }
+  applyAutoJoints(Object.keys(meshesByKey));
+  for (const j of rollerJoints) setSpinLook(j.marker, j.parts, !!j.set._spin);
+}
+
+function renderRollerSets(){
+  const host=$('rollerSets'); host.innerHTML='';
+  if (!rollerSets.length){ host.innerHTML='<p class="small">None yet. ＋ New set, then add each roller by clicking its parts.</p>'; }
+  for (const set of rollerSets){
+    const box=document.createElement('div'); box.className='sub';
+    const top=document.createElement('div'); top.className='top';
+    const name=document.createElement('input'); name.className='name'; name.value=set.name;
+    name.onchange=()=>{ set.name=name.value; saveRollerSets(); };
+    const kind=document.createElement('span'); kind.className='kind';
+    kind.textContent=`${set.rollers.length} roller${set.rollers.length!==1?'s':''}`;
+    top.append(name, kind); box.append(top);
+
+    const row=document.createElement('div'); row.className='tools'; row.style.alignItems='center';
+    const rps=document.createElement('input'); rps.type='number'; rps.min='0'; rps.step='1'; rps.value=set.rps;
+    rps.title='Speed of every roller in this set (revolutions per second)';
+    rps.style.cssText='width:58px; background:#0f1318; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:2px 6px;';
+    const unit=document.createElement('span'); unit.className='small'; unit.style.margin='0'; unit.textContent='rps';
+    rps.onchange=()=>{ set.rps=Math.max(0,+rps.value||0); saveRollerSets(); applySetSpin(set); };
+    const spin=document.createElement('button'); spin.className='iconbtn';
+    const paint=()=>{ spin.textContent=set._spin?'⏸ stop':'▶ spin'; spin.classList.toggle('on',!!set._spin); };
+    spin.onclick=()=>{ set._spin=!set._spin; paint(); applySetSpin(set); }; paint();
+    const add=document.createElement('button'); add.className='iconbtn'; add.textContent='＋ Add roller';
+    add.onclick=()=>startAddRoller(set);
+    const del=document.createElement('button'); del.className='iconbtn'; del.textContent='🗑';
+    del.title='Delete this roller set';
+    del.onclick=()=>{ set._spin=false; applySetSpin(set);
+      rollerSets=rollerSets.filter(x=>x!==set); saveRollerSets(); rebuildRollerJoints(); renderRollerSets();
+      if (sim) restartPhysicsSoon(); };
+    row.append(rps, unit, spin, add, del); box.append(row);
+
+    set.rollers.forEach((r,i)=>{
+      const line=document.createElement('div'); line.className='tools'; line.style.alignItems='center';
+      const lbl=document.createElement('span'); lbl.className='small'; lbl.style.flex='1'; lbl.style.margin='0';
+      lbl.textContent=`${r.name||'Roller '+(i+1)} · ${r.members.length} part${r.members.length!==1?'s':''}`;
+      const dir=document.createElement('button'); dir.className='iconbtn';
+      dir.title='Spin direction relative to the other rollers in this set (watch the orange arrows)';
+      const pd=()=>{ dir.textContent=(r.dir||1)>0?'⟳ aligned':'⟲ opposed'; }; pd();
+      dir.onclick=()=>{ r.dir=-(r.dir||1); pd(); saveRollerSets(); rebuildRollerJoints(); if (sim) restartPhysicsSoon(); };
+      const ax=document.createElement('button'); ax.className='iconbtn'; ax.textContent='◎';
+      ax.title="Show this roller's axis";
+      ax.onclick=()=>{ const j=rollerJoints.find(x=>x.roller===r); if (!j) return;
+        if (axisHelpers[j.id]){ hideAxis(j.id); ax.classList.remove('on'); } else { showAxis(j); ax.classList.add('on'); } };
+      const rm=document.createElement('button'); rm.className='iconbtn'; rm.textContent='✕'; rm.title='Remove this roller';
+      rm.onclick=()=>{ set.rollers=set.rollers.filter(x=>x!==r); saveRollerSets(); rebuildRollerJoints(); renderRollerSets();
+        if (sim) restartPhysicsSoon(); };
+      line.append(lbl, dir, ax, rm); box.append(line);
+    });
+    host.append(box);
+  }
+}
+
+function startAddRoller(set){
+  pendingRollerSet=set; if (!selectMode) enterSelect();
+  $('selTip').textContent=`alt+click a roller to grab its whole sub-assembly (or click parts one by one), then Add roller → “${set.name}”`;
+  $('groupBtn').textContent='Add roller ▸';
+}
+function addRollerFromSelection(){
+  const set=pendingRollerSet; if (!set || !selected.size) return;
+  const members=[...selected];
+  for (const s2 of rollerSets){ for (const r of s2.rollers) r.members=r.members.filter(k=>!selected.has(k));   // a part belongs to one roller
+    s2.rollers=s2.rollers.filter(r=>r.members.length); }
+  set.rollers.push({ id:'r'+Date.now().toString(36), name:groupNameOf(members) || `Roller ${set.rollers.length+1}`,
+                     members, axis:fitRollerAxis(members), dir:1, fit:ROLLER_FIT_VERSION });
+  clearSelection();
+  $('selTip').textContent=`added to “${set.name}” — click the next roller's parts, or Done`;
+  saveRollerSets(); rebuildRollerJoints(); renderRollerSets();
+  if (sim) restartPhysicsSoon();
+}
+
+function applySetSpin(set){
+  for (const j of rollerJoints) if (j.set===set){
+    setSpinLook(j.marker, j.parts, !!set._spin);
+    if (sim) sim.setSpin(j.id, set._spin ? set.rps*360 : 0); }
+}
+async function saveRollerSets(){
+  const clean=rollerSets.map(({_spin,...s2})=>s2);
+  try { await fetch(`/api/rollersets/${currentJob}`,{method:'POST',
+    headers:{'Content-Type':'application/json'}, body:JSON.stringify(clean)}); } catch(e){}
+}
+let restartTimer=null;
+function restartPhysicsSoon(){ clearTimeout(restartTimer);
+  restartTimer=setTimeout(async()=>{ if (sim){ stopPhysics(); await startPhysics(); } }, 400); }
+
+$('newRollerSet').onclick=()=>{
+  rollerSets.push({ id:'s'+Date.now().toString(36), name:`Roller set ${rollerSets.length+1}`, rps:20, rollers:[] });
+  if ($('useDetectedRollers').checked){ $('useDetectedRollers').checked=false; $('useDetectedRollers').onchange(); }
+  saveRollerSets(); renderRollerSets(); startAddRoller(rollerSets[rollerSets.length-1]);
+};
+$('useDetectedRollers').onchange=()=>{
+  try { localStorage.setItem(`useDetectedRollers:${currentJob}`, $('useDetectedRollers').checked?'1':'0'); } catch(e){}
+  renderAutoSubsystems(); rebuildRollerJoints(); if (sim) restartPhysicsSoon();
+};
+
+async function saveSubs(){
+  // strip runtime-only fields before persisting
+  const clean=subsystems.map(({_spin,_ang,_marker,_val,...s})=>s);
+  try { await fetch(`/api/subsystems/${currentJob}`,{method:'POST',
+    headers:{'Content-Type':'application/json'}, body:JSON.stringify(clean)}); } catch(e){}
+}
+
+// continuous roller spin, driven each frame
+let lastT=performance.now();
+setInterval(()=>{ const now=performance.now(), dt=(now-lastT)/1000; lastT=now;
+  if (sim) return;                                     // physics drives rollers with motors
+  for (const sub of subsystems){ if (sub.type==='roller' && sub._spin){
+    sub._ang=(sub._ang||0)+dt*220; driveSub(sub, sub._ang); } }
+  for (const j of autoJoints){ if (j._spin){
+    let v=j.value+dt*220; if (v>j.max) v-=360;          // wrap within the slider's 360° window
+    j._set(v); } }
+  const turning=rollerJoints.filter(j=>j.set._spin && j.set.rps>0);
+  if (turning.length){
+    for (const j of turning) j.value=(j.value + Math.min(j.set.rps, VIS_MAX_RPS)*360*dt) % 360;
+    applyAutoJoints(turning.flatMap(j=>j.members)); }
+}, 33);
+
+// ---------- physics mode ----------
+// Toggling physics builds a Rapier world from the loaded CAD (see physics.js): mechanisms become
+// motor-driven jointed bodies, so they push game pieces (and each other) instead of passing
+// through. Sliders/spin buttons then set motor targets; meshes follow the simulated bodies.
+const SPIN_DPS=1440;                    // roller motor speed in physics (deg/s ≈ 240 rpm)
+const PIECE_RE=/\b(fuel|ball|cargo|note|coral|algae|game ?piece)\b/i;
+let RAPIER=null, createPhysics=null, physicsBusy=false;
+const pieceMeshes=new Map();            // piece id -> mesh
+let pieceTemplate=null;                 // {geometry, material, center(Vector3), radius}
+const bodyKeys=new Map();               // body id -> keys (parts + spin markers) it moves
+const _B=new THREE.Matrix4(), _q=new THREE.Quaternion(), _t=new THREE.Vector3(), _one=new THREE.Vector3(1,1,1);
+
+function isPieceKey(k){ const top=(model.topLevelNames||{})[k.split('/')[0]];
+  return !k.includes('/') && top && PIECE_RE.test(top); }
+
+async function startPhysics(){
+  if (sim || physicsBusy || !model) return;
+  if (!autoJoints.length && !subsystems.length){
+    $('physStatus').textContent='no drivable mechanisms in this model'; return; }
+  physicsBusy=true; $('physBtn').disabled=true; $('physStatus').textContent='loading physics engine…';
+  try {
+    if (!RAPIER){
+      RAPIER=(await import('https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.14.0/rapier.es.js')).default;
+      await RAPIER.init();
+      createPhysics=(await import('/physics.js')).createPhysics;
+    }
+    $('physStatus').textContent='building collision shapes…';
+    await sleep(30);                                     // let the status paint
+    const t0=performance.now();
+    const s=createPhysics(RAPIER, { chassisCollide: $('selfCol').checked });
+    const pieceKeys=Object.keys(model.parts).filter(isPieceKey);
+    const parts=[];
+    for (const k in model.parts){ const m=meshesByKey[k];
+      if (!m || !m.geometry || pieceKeys.includes(k)) continue;
+      parts.push({ key:k, geomId:model.parts[k].mesh, positions:m.geometry.attributes.position.array,
+                   rest:restMat[k].elements }); }
+    const joints=[];
+    for (const j of autoJoints) joints.push({ id:j.id, type:j.type, axis:j.axis, continuous:j.continuous, free:!!j.free,
+      members:j.parts||j.members.filter(k=>model.parts[k]), rest:j.rest, min:j.min, max:j.max });
+    for (const j of rollerJoints) joints.push({ id:j.id, type:'pivot', axis:j.axis, continuous:true,
+      members:j.parts, rest:0, shape:j.shape });
+    for (const sub of subsystems) joints.push({ id:'user:'+sub.id, type:sub.type==='slider'?'slider':'pivot',
+      axis:sub.axis, members:sub.members, rest:0, continuous:sub.type==='roller',
+      min:sub.min ?? (sub.type==='slider'?-0.5:-180), max:sub.max ?? (sub.type==='slider'?0.5:180) });
+    s.build(parts, joints);
+    const box=new THREE.Box3().setFromObject(group);
+    s.addFloor(box.min.z);
+
+    // which meshes each body moves (spin markers ride on their roller's body)
+    bodyKeys.clear();
+    for (const [id,b] of s.bodies){ if (b.dynamic) bodyKeys.set(id, [...b.parts]); }
+    for (const j of autoJoints) if (j.marker && bodyKeys.has(j.id)) bodyKeys.get(j.id).push(j.marker);
+    for (const sub of subsystems) if (sub._marker && bodyKeys.has('user:'+sub.id)) bodyKeys.get('user:'+sub.id).push(sub._marker);
+    for (const j of rollerJoints) if (j.marker && bodyKeys.has(j.id)) bodyKeys.get(j.id).push(j.marker);
+
+    sim=s;
+    autoJoints.forEach(j=>j._renderFree&&j._renderFree());
+    // the CAD pose is the starting state; current slider settings become motor targets
+    for (const k in meshesByKey){ const m=meshesByKey[k]; if (restMat[k]) { m.matrix.copy(restMat[k]); m.matrixWorldNeedsUpdate=true; } }
+    for (const j of autoJoints){ if (j.continuous) sim.setSpin(j.id, j._spin?SPIN_DPS:0); else sim.setTarget(j.id, j.value); }
+    for (const set of rollerSets) applySetSpin(set);
+    for (const sub of subsystems){ if (sub.type==='roller') sim.setSpin('user:'+sub.id, sub._spin?SPIN_DPS:0);
+      else sim.setTarget('user:'+sub.id, sub._val||0); }
+
+    // the CAD's own game pieces become live balls
+    pieceTemplate=null;
+    for (const k of pieceKeys){ const m=meshesByKey[k]; if (!m) continue;
+      const tpl=templateFrom(m); if (!pieceTemplate) pieceTemplate=tpl;
+      const c=tpl.center.clone().applyMatrix4(restMat[k]);
+      m.visible=false; addPiece([c.x,c.y,c.z], tpl, restMat[k]); }
+
+    const st=sim.stats;
+    physBase=`${st.colliders} colliders` + (st.chassisCollide ? ' · hits chassis' : '');
+    $('physStatus').textContent=physBase;
+    $('physBtn').textContent='⚛ Physics: on'; $('physBtn').classList.add('active');
+    $('physTools').style.display='inline-flex';
+    $('hint').textContent='left-drag orbit • scroll zoom • right-drag pan • shift+click drop a piece';
+  } catch(e){ console.error(e); $('physStatus').textContent='physics failed: '+e.message; sim=null; }
+  physicsBusy=false; $('physBtn').disabled=false;
+}
+
+function templateFrom(mesh){
+  const g=mesh.geometry; g.computeBoundingSphere();
+  return { geometry:g, material:mesh.material, center:g.boundingSphere.center.clone(), radius:g.boundingSphere.radius };
+}
+function defaultTemplate(){
+  if (!pieceTemplate) pieceTemplate={ geometry:new THREE.SphereGeometry(0.075,24,16),
+    material:new THREE.MeshStandardMaterial({color:0xf9cb43, roughness:.7}), center:new THREE.Vector3(), radius:0.075 };
+  return pieceTemplate;
+}
+// mesh pose = body pose * offset, where offset maps the mesh into the ball's frame
+function addPiece(pos, tpl, rest){
+  const p=sim.spawnPiece(pos, tpl.radius);
+  const m=new THREE.Mesh(tpl.geometry, tpl.material); m.matrixAutoUpdate=false;
+  const toCenter=new THREE.Matrix4().makeTranslation(-pos[0],-pos[1],-pos[2]);
+  m.userData.offset = rest ? toCenter.multiply(rest)                        // CAD piece, as placed
+                           : new THREE.Matrix4().makeTranslation(-tpl.center.x,-tpl.center.y,-tpl.center.z);
+  scene.add(m); pieceMeshes.set(p.id, m); return p;
+}
+function dropPiece(at){
+  if (!sim) return;
+  const tpl=pieceTemplate||defaultTemplate();
+  let pos=at;
+  if (!pos){ const b=new THREE.Box3().setFromObject(group), c=b.getCenter(new THREE.Vector3());
+    const s=b.getSize(new THREE.Vector3());
+    pos=[c.x+(Math.random()-.5)*s.x*.5, c.y+(Math.random()-.5)*s.y*.5, b.max.z+tpl.radius*2+0.1]; }
+  addPiece(pos, tpl, null);
+}
+
+// Fill the hopper: grid of spots over the hopper's current bounding box, bottom layer first,
+// keeping only spots where a ball fits without touching the robot AND that are boxed in by it
+// (so balls land inside the hopper, not on top of a wall or out in the open).
+const HOPPER_RE=/hopper/i, FILL_MAX=120;
+function fillHopper(){
+  if (!sim) return;
+  const tops=Object.entries(model.topLevelNames||{}).filter(([,n])=>HOPPER_RE.test(n)).map(([id])=>id);
+  const keys=Object.keys(meshesByKey).filter(k=>tops.includes(((model.partPaths||{})[k]||[])[0]));
+  if (!keys.length){ $('physStatus').textContent='no sub-assembly named “hopper” found'; return; }
+  const box=new THREE.Box3();
+  for (const k of keys){ const m=meshesByKey[k]; m.updateMatrixWorld(); box.union(new THREE.Box3().setFromObject(m)); }
+  const tpl=pieceTemplate||defaultTemplate(), r=tpl.radius, g=r/2, sq=0.005;   // foam: may start 5 mm squeezed
+  const reach=Math.max(...box.getSize(new THREE.Vector3()).toArray());
+  const placed=[...sim.pieces].map(p=>{ const t=p.rb.translation(); return [t.x,t.y,t.z]; });
+  const far=(q)=>placed.every(p=>(p[0]-q[0])**2+(p[1]-q[1])**2+(p[2]-q[2])**2 >= (2*r-sq)**2);
+  let n=0;   // fine candidate grid, greedy from the bottom up (packs ~30% more than a ball-sized grid)
+  for (let z=box.min.z+r; z<=box.max.z-r*0.5 && n<FILL_MAX; z+=g)
+    for (let x=box.min.x+r; x<=box.max.x-r && n<FILL_MAX; x+=g)
+      for (let y=box.min.y+r; y<=box.max.y-r && n<FILL_MAX; y+=g){
+        const q=[x,y,z];
+        if (!far(q)) continue;
+        const pr=sim.probe(q, r-sq, reach); if (!pr.clear || !pr.enclosed) continue;
+        addPiece(q, tpl, null); placed.push(q); n++;
+      }
+  $('physStatus').textContent=`${physBase} · added ${n} pieces to the hopper`;
+}
+
+let readoutFrame=0, perfAcc={ms:0, frames:0, t:performance.now()}, physBase='';
+function physicsTick(dt){
+  const t0=performance.now();
+  sim.step(dt);
+  perfAcc.ms+=performance.now()-t0; perfAcc.frames++;
+  if (performance.now()-perfAcc.t>1000){   // live timing: fps + physics cost per frame
+    const secs=(performance.now()-perfAcc.t)/1000;
+    $('physStatus').textContent=`${physBase} · ${Math.round(perfAcc.frames/secs)} fps · physics ${(perfAcc.ms/perfAcc.frames).toFixed(1)} ms`;
+    perfAcc={ms:0, frames:0, t:performance.now()}; }
+  // live readouts: show where each joint really is (a free hopper being pushed, a stalled arm)
+  if (++readoutFrame % 6 === 0) for (const j of autoJoints){ if (j.continuous || !j._val) continue;
+    const v=sim.jointValue(j.id); if (v==null) continue;
+    j._val.textContent = j.type==='slider' ? `${v.toFixed(3)} m` : `${Math.round(v)}°`;
+    if (j.free){ j.value=v; j._rng.value=v; } }
+  for (const [id,keys] of bodyKeys){
+    const rj = id.startsWith('roll:') ? rollerJoints.find(j=>j.id===id) : null;
+    if (rj){   // real RPS in the sim; on screen: parent pose * capped visual spin (no strobing)
+      if (rj.set._spin) rj.value=(rj.value + Math.min(rj.set.rps, VIS_MAX_RPS)*360*dt) % 360;
+      const parent=sim.joints.get(id)?.parent, pp=parent && parent!=='chassis' ? sim.bodyPose(parent) : null;
+      if (pp) _B.compose(_t.set(pp.t.x,pp.t.y,pp.t.z), _q.set(pp.q.x,pp.q.y,pp.q.z,pp.q.w), _one); else _B.identity();
+      _B.multiply(rotAbout(rj.axis.origin, rj.axis.dir, THREE.MathUtils.degToRad(rj.value)));
+      for (const k of keys){ const m=meshesByKey[k]; if (!m || !restMat[k]) continue;
+        m.matrix.multiplyMatrices(_B, restMat[k]); m.matrixWorldNeedsUpdate=true; }
+      continue; }
+    const p=sim.bodyPose(id); if (!p) continue;
+    _B.compose(_t.set(p.t.x,p.t.y,p.t.z), _q.set(p.q.x,p.q.y,p.q.z,p.q.w), _one);
+    for (const k of keys){ const m=meshesByKey[k]; if (!m || !restMat[k]) continue;
+      m.matrix.multiplyMatrices(_B, restMat[k]); m.matrixWorldNeedsUpdate=true; } }
+  const alive=new Set();
+  for (const p of sim.pieces){ alive.add(p.id); const m=pieceMeshes.get(p.id); if (!m) continue;
+    const t=p.rb.translation(), q=p.rb.rotation();
+    _B.compose(_t.set(t.x,t.y,t.z), _q.set(q.x,q.y,q.z,q.w), _one);
+    m.matrix.multiplyMatrices(_B, m.userData.offset); m.matrixWorldNeedsUpdate=true; }
+  for (const [id,m] of pieceMeshes) if (!alive.has(id)){ scene.remove(m); pieceMeshes.delete(id); }
+}
+
+function clearPieceMeshes(){ for (const m of pieceMeshes.values()) scene.remove(m); pieceMeshes.clear(); }
+function stopPhysics(){
+  if (!sim) return;
+  sim.free(); sim=null; clearPieceMeshes(); bodyKeys.clear();
+  autoJoints.forEach(j=>{ j._renderFree&&j._renderFree(); if (j._val) j._val.textContent=fmtJoint(j); });
+  // back to the kinematic pose the sliders describe
+  for (const k in meshesByKey){ const m=meshesByKey[k]; m.visible=true;
+    if (restMat[k]){ m.matrix.copy(restMat[k]); m.matrixWorldNeedsUpdate=true; } }
+  applyAutoJoints(Object.keys(meshesByKey));
+  for (const sub of subsystems) if (sub._val || sub._ang) driveSub(sub, sub._val || sub._ang);
+  $('physBtn').textContent='⚛ Physics: off'; $('physBtn').classList.remove('active');
+  $('physTools').style.display='none'; $('physStatus').textContent='';
+  $('hint').textContent='left-drag orbit • scroll zoom • right-drag pan';
+}
+$('physBtn').onclick=()=>{ sim ? stopPhysics() : startPhysics(); };
+$('dropBtn').onclick=()=>dropPiece();
+$('fillHopper').onclick=fillHopper;
+$('clearPieces').onclick=()=>{ if (!sim) return; for (const p of [...sim.pieces]) sim.removePiece(p); };
+$('resetPhys').onclick=async()=>{ stopPhysics(); await startPhysics(); };
+$('selfCol').onchange=async()=>{ if (sim){ stopPhysics(); await startPhysics(); } };
+// shift+click on the robot drops a piece just above that spot
+renderer.domElement.addEventListener('pointerup', e=>{
+  if (!sim || !e.shiftKey || selectMode) return;
+  const hit=pickMesh(e); if (!hit) return;
+  const r=(pieceTemplate||defaultTemplate()).radius;
+  dropPiece([hit.point.x, hit.point.y, hit.point.z + r*2 + 0.15]);
+});
+
+// ---------- define / group flow ----------
+$('defineBtn').onclick=()=>{ selectMode ? exitSelect() : enterSelect(); };
+$('exitSelect').onclick=exitSelect;
+$('clearSel').onclick=clearSelection;
+$('groupBtn').onclick=()=>{ if (pendingRollerSet) return addRollerFromSelection();
+  if (hingeFlow){ if (hingeFlow.step==='edit') openPivotModal(); return; } $('grpCount').textContent=selected.size; $('grpName').value='';
+  $('groupModal').classList.add('show'); $('grpName').focus(); };
+$('grpCancel').onclick=()=>$('groupModal').classList.remove('show');
+$('grpCreate').onclick=()=>{
+  const members=[...selected];
+  const type=document.querySelector('input[name=grpType]:checked').value;
+  const name=$('grpName').value.trim() || (type==='roller'?'Roller':type==='slider'?'Slider':'Pivot');
+  const id='s'+Math.abs([...name].reduce((a,c)=>a*31+c.charCodeAt(0)|0,members.length))+'_'+members.length;
+  const sub={ id, name, type, members, axis:fitAxis(members) };
+  subsystems.push(sub); saveSubs(); renderSubs(); showAxis(sub);
+  $('groupModal').classList.remove('show'); exitSelect();
+};
+
+async function loadModel(job){
+  const res = await fetch(`/api/model/${job}`);
+  if (!res.ok) return false;
+  if (sim) stopPhysics();
+  model = await res.json(); currentJob = job;
+  Object.keys(axisHelpers).forEach(hideAxis); exitSelect();
+  subsystems = (model.subsystems||[]).map(s=>({...s}));
+  rollerSets = (model.rollerSets||[]).map(s2=>({...s2, rollers:(s2.rollers||[]).map(r=>({...r}))}));
+  rollerJoints=[];
+  { let pref=null; try { pref=localStorage.getItem(`useDetectedRollers:${job}`); } catch(e){}
+    $('useDetectedRollers').checked = pref!==null ? pref==='1' : !rollerSets.length; }
+  autoSubsystems = model.autoSubsystems || [];
+  if (group) scene.remove(group);
+  markerGroup.clear(); autoJoints=[];
+  group = new THREE.Group(); scene.add(group); meshesByKey={}; restMat={};
+  const byMesh={}; for (const k in model.parts){ (byMesh[model.parts[k].mesh] ||= []).push(k); }
+  const restPoses = model.rest
+    || (model.dofs[0]?.frames.find(f=>f.val===0) || model.dofs[0]?.frames[0])?.poses || {};
+  const meshes=Object.keys(byMesh);
+  await Promise.all(meshes.map(h => new Promise(resolve => {
+    loader.load(`/assets/${job}/${h}.stl`, geo => {
+      const c=model.parts[byMesh[h][0]].color;
+      const mat=new THREE.MeshStandardMaterial({ color:new THREE.Color(c[0],c[1],c[2]),
+        metalness:.25, roughness:.6, transparent:c[3]<1, opacity:c[3], side:THREE.DoubleSide });
+      for (const k of byMesh[h]){ const m=new THREE.Mesh(geo,mat); m.matrixAutoUpdate=false;
+        m.userData.key=k;
+        if (restPoses[k]){ const T=matFromT(restPoses[k]); m.matrix.copy(T); restMat[k]=T.clone(); }
+        else restMat[k]=new THREE.Matrix4();
+        group.add(m); meshesByKey[k]=m; }
+      resolve();
+    }, undefined, () => resolve());
+  })));
+  const box=new THREE.Box3().setFromObject(group);
+  const ctr=box.getCenter(new THREE.Vector3()), s=box.getSize(new THREE.Vector3()).length();
+  modelSpan=s;
+  controls.target.copy(ctr); camera.position.copy(ctr).add(new THREE.Vector3(s*.6,-s*.7,s*.5));
+  camera.near=s/100; camera.far=s*10; camera.updateProjectionMatrix(); controls.update();
+  buildDofUI(); renderAutoSubsystems(); renderSubs(); refitOldRollers(); rebuildRollerJoints(); renderRollerSets();
+  const total=model.dofs.length+autoSubsystems.length+subsystems.length;
+  $('modelName').textContent = `· ${total} mechanism${total!==1?'s':''}`;
+  localStorage.setItem('lastJob', job);
+  return true;
+}
+
+// ---- import modal + progress ----
+const fmt = (s) => s>90 ? `~${Math.round(s/60)}m` : `~${Math.max(1,Math.round(s))}s`;
+$('openImport').onclick = () => { $('modalErr').textContent=''; $('modal').classList.add('show'); $('url').focus(); };
+$('cancelImport').onclick = () => $('modal').classList.remove('show');
+
+$('doImport').onclick = async () => {
+  const url=$('url').value.trim();
+  if (!url){ $('modalErr').textContent='Paste an assembly URL.'; return; }
+  $('modal').classList.remove('show');
+  $('overlay').classList.add('show'); $('ovMsg').textContent='Starting…'; $('barFill').style.width='0%';
+  $('ovPct').textContent='0%'; $('ovEta').textContent='';
+  try {
+    const res = await fetch('/api/import', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ url }) });
+    const data = await res.json();
+    if (!res.ok || !data.job){ throw new Error(data.error || 'import failed'); }
+    if (data.cached){ await loadModel(data.job); $('overlay').classList.remove('show'); return; }
+    while (true){
+      await sleep(1200);
+      const s = await (await fetch(`/api/job/${data.job}`)).json();
+      const pct = Math.round((s.progress||0)*100);
+      $('ovMsg').textContent = s.message || s.status;
+      $('barFill').style.width = pct+'%'; $('ovPct').textContent = pct+'%';
+      if (s.elapsed && s.progress>0.02 && s.progress<1){
+        $('ovEta').textContent = fmt(s.elapsed*(1-s.progress)/s.progress)+' remaining';
+      }
+      if (s.done){
+        if (s.status==='error'){ $('overlay').classList.remove('show');
+          $('modalErr').textContent='Error: '+s.message; $('modal').classList.add('show'); }
+        else { await loadModel(data.job); $('overlay').classList.remove('show'); }
+        break;
+      }
+    }
+  } catch(e){ $('overlay').classList.remove('show'); $('modalErr').textContent=e.message; $('modal').classList.add('show'); }
+};
+
+// ---- startup: restore last upload, else the demo intake ----
+(async () => { const qs = new URLSearchParams(location.search);
+  const last = qs.get('job') || localStorage.getItem('lastJob');
+  if (!(last && await loadModel(last))) await loadModel('intake');
+  // ?physics=1 starts the simulation right away; &drop=N drops N game pieces onto the robot
+  if (qs.get('physics')) { await startPhysics();
+    for (let i=0; i<(+qs.get('drop')||0); i++){ dropPiece(); await sleep(150); }
+    if (qs.get('fill')){ await sleep(300); fillHopper(); }
+    document.body.dataset.phys = $('physStatus').textContent; } })();
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+[
+ {
+  "id": "h36425441_37",
+  "name": "Hood",
+  "type": "revolute",
+  "members": [
+   "ML1Y7GlcngZ5g3Pov/Mrg0feXuJVs+Ur/7b/Mx6f2KNkdmpapyxSL",
+   "ML1Y7GlcngZ5g3Pov/Mrg0feXuJVs+Ur/7b/ID92D+/ssWT3yPIv3",
+   "ML1Y7GlcngZ5g3Pov/Mrg0feXuJVs+Ur/7b/IUHcSqz7TVIVL7Ykw",
+   "ML1Y7GlcngZ5g3Pov/Mrg0feXuJVs+Ur/7b/IY3f3Z9ogdTyxaJjT",
+   "ML1Y7GlcngZ5g3Pov/Mrg0feXuJVs+Ur/7b/IZOszNyV/MsFLXjmB",
+   "ML1Y7GlcngZ5g3Pov/Mrg0feXuJVs+Ur/7b/MOVfFiNJw4EQgAw51",
+   "ML1Y7GlcngZ5g3Pov/Mrg0feXuJVs+Ur/7b/MY3nJzFmABlsHTXM/",
+   "ML1Y7GlcngZ5g3Pov/Mrg0feXuJVs+Ur/7b/M6k3YcREjiZ2Unj+w",
+   "ML1Y7GlcngZ5g3Pov/Mrg0feXuJVs+Ur/7b/Mf9WaPBiN80KKaYRb",
+   "ML1Y7GlcngZ5g3Pov/M2O2yFbIIILLjZUdx/MHwSZxe30KggEbya2",
+   "ML1Y7GlcngZ5g3Pov/M/yJUhHxkP3xePMCa/M12SdBQwIfWZy0stT",
+   "ML1Y7GlcngZ5g3Pov/MoepdoPdURp5MptM6",
+   "ML1Y7GlcngZ5g3Pov/IpI2b+GbqNyAYrI6a",
+   "ML1Y7GlcngZ5g3Pov/Mp9Numjc8qsNurijt",
+   "ML1Y7GlcngZ5g3Pov/M/yJUhHxkP3xePMCa/IIQcwu1dcd9QyH9ns",
+   "ML1Y7GlcngZ5g3Pov/MNIgUTRfFv7O/PcjP",
+   "ML1Y7GlcngZ5g3Pov/M2O2yFbIIILLjZUdx/IFHT2qBnYetjYwYRC",
+   "ML1Y7GlcngZ5g3Pov/M2O2yFbIIILLjZUdx/MgQhVzj4lxEaFHXkI",
+   "ML1Y7GlcngZ5g3Pov/MhKnsFkUQr8NXOEAX",
+   "ML1Y7GlcngZ5g3Pov/M/yJUhHxkP3xePMCa/MWXZNW+QWkbInsDcW",
+   "ML1Y7GlcngZ5g3Pov/IQRku2oGEz8tqVJH5",
+   "ML1Y7GlcngZ5g3Pov/MpivYJTk+a6Ud6oNC/Mp8uLw3CAAIc9NTVM",
+   "ML1Y7GlcngZ5g3Pov/M2O2yFbIIILLjZUdx/IldTGxQXzhSqkFMA0",
+   "ML1Y7GlcngZ5g3Pov/MMxd/YnftxBdKj0G4",
+   "ML1Y7GlcngZ5g3Pov/IekimfPmLpUclLQiK",
+   "ML1Y7GlcngZ5g3Pov/I3v/+XC+TuwjsELRo",
+   "ML1Y7GlcngZ5g3Pov/MQEHAsHQuBS8dx4qV",
+   "ML1Y7GlcngZ5g3Pov/MjIOGxxf2iVKZg12X",
+   "ML1Y7GlcngZ5g3Pov/IDVlXLf7ZzxpI9xm6",
+   "ML1Y7GlcngZ5g3Pov/IbI+HkPB1OyXh8ebU",
+   "ML1Y7GlcngZ5g3Pov/M2O2yFbIIILLjZUdx/IPfWk407JyTKXHOA5",
+   "ML1Y7GlcngZ5g3Pov/M/yJUhHxkP3xePMCa/I8YLvuBOQz2ObwsNR",
+   "ML1Y7GlcngZ5g3Pov/M/yJUhHxkP3xePMCa/MB+O/OdEW0bFk7hDr",
+   "ML1Y7GlcngZ5g3Pov/M/yJUhHxkP3xePMCa/IyxPKzd3aZL2M9qdH",
+   "ML1Y7GlcngZ5g3Pov/M2O2yFbIIILLjZUdx/MChicwPjY382tspD9",
+   "ML1Y7GlcngZ5g3Pov/M2O2yFbIIILLjZUdx/Mwr3kyrhy3Hn1dVLG",
+   "ML1Y7GlcngZ5g3Pov/M/yJUhHxkP3xePMCa/MK/Xz2CtXwa4VDjnu"
+  ],
+  "axis": {
+   "origin": [
+    0.3452193360270412,
+    -0.28574999998836986,
+    0.4952999986795852
+   ],
+   "dir": [
+    0.9999999999938417,
+    -1.1427470102431477e-06,
+    -3.3182520311637148e-06
+   ]
+  },
+  "min": 0,
+  "max": 30,
+  "hinge": [
+   "ML1Y7GlcngZ5g3Pov/IC96yIE3UvevG5TtM"
+  ]
+ }
+]

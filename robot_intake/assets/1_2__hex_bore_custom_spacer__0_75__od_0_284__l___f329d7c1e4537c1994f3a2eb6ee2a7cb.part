@@ -1,0 +1,14 @@
+{
+    "configuration": "B=64.0;Bore_Size=0.012700000000000001+meter;G=64.0;Length=0.0072263+meter;List_1ZOEEEsgs5jPoF=Default;OD=0.01905+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter",
+    "documentId": "c4dcc85e670893bc8e75e785",
+    "documentMicroversion": "1e8a206b92a299089e73a2ba",
+    "documentVersion": "fa9fc7097ceb2866705b4e1c",
+    "elementId": "080d3c4abf7eb0607b4edfdd",
+    "fullConfiguration": "B=64.0;Bore_Size=0.012700000000000001+meter;G=64.0;Length=0.0072263+meter;List_1ZOEEEsgs5jPoF=Default;OD=0.01905+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter",
+    "id": "IFYKudSNM/m+ckxSg",
+    "isStandardContent": false,
+    "name": "1/2\" Hex Bore Custom Spacer (0.75\" OD,0.284\" L) <1>",
+    "partId": "JHD",
+    "suppressed": false,
+    "type": "Part"
+}

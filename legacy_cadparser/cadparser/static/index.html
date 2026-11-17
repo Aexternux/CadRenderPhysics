@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CadParser Viewer</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header><a href="/">CadParser</a><span>Assembly viewer</span><div id="connection">Loading…</div></header>
+  <main>
+    <aside class="sidebar">
+      <label for="assembly">Cached assembly</label>
+      <select id="assembly"><option>Loading assemblies…</option></select>
+      <form id="import-form" class="import-form">
+        <label for="onshape-url">Import Onshape assembly</label>
+        <input id="onshape-url" type="url" required placeholder="https://cad.onshape.com/documents/...">
+        <button type="submit">Import</button>
+      </form>
+      <section><h2>Joints</h2><div id="joints" class="joint-list"></div></section>
+      <section><h2>Subsystems</h2><div id="subsystems"></div></section>
+    </aside>
+    <section class="workspace">
+      <div class="toolbar"><button id="reset" type="button">Reset pose</button><button id="load-meshes" type="button">Download and render CAD</button><span id="counts"></span><span class="hint">Drag to orbit · Scroll to zoom</span></div>
+      <div id="viewer" aria-label="Assembly visualization"></div>
+      <div id="empty" class="empty"><h1>No cached assembly yet</h1><p>Run <code>python fetch_assembly.py "&lt;Onshape URL&gt;"</code>, then refresh this page.</p></div>
+    </section>
+    <aside class="details"><section><h2>Selection</h2><div id="selection">Click a part in the viewer.</div></section><section><h2>Diagnostics</h2><ul id="warnings"></ul></section></aside>
+  </main>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/"}}</script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

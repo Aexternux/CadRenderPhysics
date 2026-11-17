@@ -1,0 +1,14 @@
+{
+    "configuration": "B=64.0;BearingDepth=0.006350000000000001+meter;BearingFlangeOD=0.031115000000000004+meter;Bearing_Flange_Height=0.0015875000000000002+meter;Bearing_OD=0.028575000000000003+meter;Bearing_Tolerance=1.2700000000000002E-4+meter;Endcap_Tolerance=1.2700000000000002E-4+meter;Flange_Width=0.0031750000000000003+meter;G=64.0;Hex_Bore=false;Inner_Bearing=false;Inset_Bearing_Flange=true;List_40bBUqJbkXcVE7=_1_2__Hex;List_KwkamJRMVI00Xr=Default;List_SPwvW3wOatTjY1=Double_HTD;Outer_Bearing=true;R=64.0;Roller_Length=0.644525+meter;Shaft_Stickout=0.006350000000000001+meter;Spacer_Length=0.006350000000000001+meter;Throughbore_OD=0.012700000000000001+meter;Tooth_Count=28.0;TubeID=0.04762500000000001+meter;Tube_OD=0.050800000000000005+meter",
+    "documentId": "a3ba4d41c5730393acd02d7e",
+    "documentMicroversion": "f54fded20f5bf8955b33ef64",
+    "documentVersion": "df6a4389ddb8d0f568e20ec3",
+    "elementId": "52380c5e567f07bc5fc52eba",
+    "fullConfiguration": "B=64.0;BearingDepth=0.006350000000000001+meter;BearingFlangeOD=0.031115000000000004+meter;Bearing_Flange_Height=0.0015875000000000002+meter;Bearing_OD=0.028575000000000003+meter;Bearing_Tolerance=1.2700000000000002E-4+meter;Endcap_Tolerance=1.2700000000000002E-4+meter;Flange_Width=0.0031750000000000003+meter;G=64.0;Hex_Bore=false;Inner_Bearing=false;Inset_Bearing_Flange=true;List_40bBUqJbkXcVE7=_1_2__Hex;List_KwkamJRMVI00Xr=Default;List_SPwvW3wOatTjY1=Double_HTD;Outer_Bearing=true;R=64.0;Roller_Length=0.644525+meter;Shaft_Stickout=0.006350000000000001+meter;Spacer_Length=0.006350000000000001+meter;Throughbore_OD=0.012700000000000001+meter;Tooth_Count=28.0;TubeID=0.04762500000000001+meter;Tube_OD=0.050800000000000005+meter",
+    "id": "M/csYPQp1Ivqtcpel",
+    "isStandardContent": false,
+    "name": "1/2\" Rounded Hex (13.75mm OD)-2.563\" <1>",
+    "partId": "R9BD",
+    "suppressed": false,
+    "type": "Part"
+}

@@ -1,0 +1,14 @@
+{
+    "configuration": "B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter",
+    "documentId": "c4dcc85e670893bc8e75e785",
+    "documentMicroversion": "1e8a206b92a299089e73a2ba",
+    "documentVersion": "fa9fc7097ceb2866705b4e1c",
+    "elementId": "e21c60f9911b3173d2b69b7f",
+    "fullConfiguration": "B=64.0;Bore_Size=0.004978400000000001+meter;G=64.0;Length=0.025400000000000002+meter;OD=0.009525+meter;R=64.0;SplineTolerance=1.2700000000000002E-4+meter",
+    "id": "I6sYf3akRKlUSEO4w",
+    "isStandardContent": false,
+    "name": "0.196\" ID Custom Spacer (0.375\" OD,1\" L) <1>",
+    "partId": "JHD",
+    "suppressed": false,
+    "type": "Part"
+}

@@ -1,0 +1,14 @@
+{
+    "configuration": "B=64.0;Bore_Size=0.028575000000000003+meter;G=64.0;Length=0.001905+meter;OD=0.031115000000000004+meter;R=64.0;SplineTolerance=2.5400000000000005E-4+meter",
+    "documentId": "c4dcc85e670893bc8e75e785",
+    "documentMicroversion": "1e8a206b92a299089e73a2ba",
+    "documentVersion": "fa9fc7097ceb2866705b4e1c",
+    "elementId": "e21c60f9911b3173d2b69b7f",
+    "fullConfiguration": "B=64.0;Bore_Size=0.028575000000000003+meter;G=64.0;Length=0.001905+meter;OD=0.031115000000000004+meter;R=64.0;SplineTolerance=2.5400000000000005E-4+meter",
+    "id": "M0IeqlxOFIJHHG93M",
+    "isStandardContent": false,
+    "name": "1.125\" ID Custom Spacer (1.225\" OD,0.075\" L) <1>",
+    "partId": "JHD",
+    "suppressed": false,
+    "type": "Part"
+}

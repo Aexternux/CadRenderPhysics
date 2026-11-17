@@ -1,0 +1,14 @@
+{
+    "configuration": "A=0.8;B=255.0;Bolts=true;G=255.0;Inset_Bearing_Flange=true;Left_Endcap_Length=0.025400000000000002+meter;Left_Shaft_Stickout=0.006350000000000001+meter;Left_Spacer_Length=0.006350000000000001+meter;List_cxOQdrdOEWCyFo=Default;Outer_Flange_Width=0.0031750000000000003+meter;R=255.0;Right_Endcap_Length=0.025400000000000002+meter;Right_Shaft_Stickout=0.006350000000000001+meter;Right_Spacer_Lenth=0.006350000000000001+meter;Roller_Length=0.644525+meter;Tube_ID=0.04762500000000001+meter;Tube_OD=0.050800000000000005+meter",
+    "documentId": "a3ba4d41c5730393acd02d7e",
+    "documentMicroversion": "f54fded20f5bf8955b33ef64",
+    "documentVersion": "df6a4389ddb8d0f568e20ec3",
+    "elementId": "7c6c18004ad203a261b779f5",
+    "fullConfiguration": "A=0.8;B=255.0;Bolts=true;G=255.0;Inset_Bearing_Flange=true;Left_Endcap_Length=0.025400000000000002+meter;Left_Shaft_Stickout=0.006350000000000001+meter;Left_Spacer_Length=0.006350000000000001+meter;List_cxOQdrdOEWCyFo=Default;Outer_Flange_Width=0.0031750000000000003+meter;R=255.0;Right_Endcap_Length=0.025400000000000002+meter;Right_Shaft_Stickout=0.006350000000000001+meter;Right_Spacer_Lenth=0.006350000000000001+meter;Roller_Length=0.644525+meter;Tube_ID=0.04762500000000001+meter;Tube_OD=0.050800000000000005+meter",
+    "id": "M2xEvVGWBLJlhneEN",
+    "isStandardContent": false,
+    "name": "Deadaxle Tube_22.375_in <1>",
+    "partId": "JHD",
+    "suppressed": false,
+    "type": "Part"
+}

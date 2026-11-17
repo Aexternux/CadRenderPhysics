@@ -1,0 +1,9 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+# exported meshes/urdf (regenerated from Onshape)
+robot/*.urdf
+robot/*.stl
+robot/*.obj
+robot/assets/
