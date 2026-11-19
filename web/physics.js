@@ -44,6 +44,7 @@ const PIECE_FRICTION = 0.7;     // foam game piece. Averaged with what it touche
 const ROLLER_FRICTION = 2.0;    // grip-tape rollers on foam. Max-combined so the piece's lower value
                                 // doesn't dilute it; static walls stay slick -- a grippy ramp jams a ball
 const ROLLER_DENSITY = 500;     // kg/m^3 for a roller's solid cylinder (stands in for a tube + hubs)
+const RIGID_SQUASH = 0.001;     // m: how far a ball can squash into a wall or a STOPPED roller (see spawnPiece)
 const COMPRESS = 0.015;         // m: how far a foam game piece can squash (~0.6 in) before its core
 const FOAM_K = 1500;            // N/m foam stiffness (its own weight squashes it ~1.4 mm)
 const FOAM_C = 16;              // N·s/m foam damping (~half critical: piles settle, stays explicit-stable)
@@ -57,7 +58,7 @@ const DT = 1 / 120;
 const MAX_SUBSTEPS = 3;
 
 // Collision groups (membership << 16 | filter).
-const G_CHASSIS = 0x0001, G_PIECE = 0x0002, G_FLOOR = 0x0004, G_MECH = 0x0008, G_SHELL = 0x0010;
+const G_CHASSIS = 0x0001, G_PIECE = 0x0002, G_FLOOR = 0x0004, G_MECH = 0x0008, G_SHELL = 0x0010, G_GROUND = 0x0020, G_RSHELL = 0x0040;
 const groups = (member, filter) => ((member << 16) | filter) >>> 0;
 const FREE_DAMPING = 0.5;       // free joints: light viscous damping (bearing friction), x inertia
 
@@ -67,8 +68,8 @@ export function createPhysics(RAPIER, opts = {}) {
   // fill each other's notches, so making them solid later jams the mechanism short of its stop.
   const releaseGhosts = opts.releaseGhosts ?? false;
   const overlapTol = opts.overlapTol ?? OVERLAP_TOL;
-  const MECH_GROUPS = groups(G_MECH, G_PIECE | G_FLOOR | G_MECH | (chassisCollide ? G_CHASSIS : 0));
-  const CHASSIS_GROUPS = groups(G_CHASSIS, G_PIECE | G_FLOOR | (chassisCollide ? G_MECH : 0));
+  const MECH_GROUPS = groups(G_MECH, G_PIECE | G_RSHELL | G_FLOOR | G_MECH | (chassisCollide ? G_CHASSIS : 0));
+  const CHASSIS_GROUPS = groups(G_CHASSIS, G_PIECE | G_RSHELL | G_FLOOR | (chassisCollide ? G_MECH : 0));
   const world = new RAPIER.World({ x: 0, y: 0, z: -9.81 });       // Onshape is Z-up
   world.timestep = DT;
   world.integrationParameters.numSolverIterations = 4;
@@ -88,9 +89,40 @@ export function createPhysics(RAPIER, opts = {}) {
   const events = new RAPIER.EventQueue(true);   // Rapier only runs contact hooks with a queue
 
   const pairKey = (a, b) => (a < b ? `${a}:${b}` : `${b}:${a}`);
+  const rshells = new Set();        // balls' near-full-size rigid shells (vs the robot)
+  const shellGhosts = new Set();    // shell:roller pairs not solved yet (roller spinning / ball sunk in)
+  const rollerCache = new Map();    // collider handle -> roller joint | null
+  function rollerOf(h) {
+    if (rollerCache.has(h)) return rollerCache.get(h);
+    const k = colliderPart.get(h), b = k && bodies.get(partBody.get(k));
+    const j = b && b.joint && b.joint.continuous ? b.joint : null;
+    if (b && b.joint !== undefined) rollerCache.set(h, j);      // joints exist -> answer is final
+    return j;
+  }
+  function releaseShellGhosts() {
+    for (const key of shellGhosts) {
+      const [h1, h2] = key.split(':').map(Number);
+      const c1 = world.getCollider(h1), c2 = world.getCollider(h2);
+      if (!c1 || !c2) { shellGhosts.delete(key); continue; }
+      if (rollerOf(rshells.has(h1) ? h2 : h1)?.spinning) continue;
+      let sunk = false;
+      world.contactPair(c1, c2, (man) => { for (let i = 0; i < man.numContacts(); i++) if (man.contactDist(i) < 0) sunk = true; });
+      if (!sunk) shellGhosts.delete(key);
+    }
+  }
 
   const hooks = {
     filterContactPair(c1, c2) {
+      // a ball's rigid shell vs the robot: solid, except against a SPINNING roller (there the foam
+      // squashes to grip). A shell already sunk into a roller when it stopped stays a ghost until
+      // the ball comes free, so stopping a roller never pops a ball out of it.
+      if (rshells.has(c1) || rshells.has(c2)) {
+        const other = rshells.has(c1) ? c2 : c1, j = rollerOf(other);
+        if (!j) return RAPIER.SolverFlags.COMPUTE_IMPULSE;
+        const key = pairKey(c1, c2);
+        if (j.spinning) { shellGhosts.add(key); return RAPIER.SolverFlags.EMPTY; }
+        return shellGhosts.has(key) ? RAPIER.SolverFlags.EMPTY : RAPIER.SolverFlags.COMPUTE_IMPULSE;
+      }
       // EMPTY = contacts are still computed (so we can see when the pair separates) but not solved
       if (disabled.size && disabled.has(pairKey(c1, c2))) return RAPIER.SolverFlags.EMPTY;
       return RAPIER.SolverFlags.COMPUTE_IMPULSE;
@@ -427,10 +459,96 @@ export function createPhysics(RAPIER, opts = {}) {
     j.joint.configureMotorVelocity(degPerSec * Math.PI / 180, j.inertia * 30);
     j.spinning = degPerSec !== 0;
   }
+  // Two floors at the same height. The robot's own mechanisms touch a FIXED one (as before).
+  // Game pieces touch a separate kinematic "ground" that moves with the FIELD: the simulation runs
+  // in the robot's frame (chassis fixed = stable contacts), so when the robot drives, the carpet
+  // under it slides backwards at the robot's speed and loose balls stay put on the field.
+  let staticFloor = null, ground = null, groundZ = 0, floorZ = -Infinity;
   function addFloor(z) {
     const rb = world.createRigidBody(RAPIER.RigidBodyDesc.fixed());
-    world.createCollider(RAPIER.ColliderDesc.cuboid(20, 20, 0.05).setTranslation(0, 0, z - 0.05).setFriction(0.9)
-      .setCollisionGroups(groups(G_FLOOR, 0xffff)), rb);
+    staticFloor = world.createCollider(RAPIER.ColliderDesc.cuboid(20, 20, 0.05).setTranslation(0, 0, z - 0.05).setFriction(0.9)
+      .setCollisionGroups(groups(G_FLOOR, 0xffff & ~(G_PIECE | G_SHELL | G_GROUND))), rb).handle;
+    ground = world.createRigidBody(RAPIER.RigidBodyDesc.kinematicVelocityBased());
+    world.createCollider(RAPIER.ColliderDesc.cuboid(60, 60, 0.05).setTranslation(0, 0, z - 0.05).setFriction(0.9)
+      .setDensity(0).setCollisionGroups(groups(G_GROUND, G_PIECE)), ground);
+    groundZ = 0; floorZ = z;
+  }
+  // ---- robot motion on the field (robot frame = this world's frame) ----
+  // v: robot velocity (m/s) in this world's axes, w: yaw rate (rad/s), o: the robot's turning centre.
+  // Each step the game pieces are re-expressed in the moved frame (exact for a ball moving freely
+  // on the field: covers the robot speeding up, turning, centrifugal and Coriolis), and the ground
+  // is given the field's velocity as seen from the robot so rolling balls keep their field speed.
+  const motion = { v: { x: 0, y: 0 }, w: 0, o: { x: 0, y: 0 } };
+  let applied = { x: 0, y: 0, w: 0 }, moving = false;
+  const moved = { x: 0, y: 0, w: 0 };
+  function takeMoved() { const m = { ...moved }; moved.x = moved.y = moved.w = 0; return m; }
+  // Whatever robot motion the steps did NOT cover (the browser fell behind and physics ran in slow
+  // motion, or the smoothed speed lagged the drawn robot) is applied directly to the balls lying out
+  // on the field: they are moved to where the field under them went. Balls in/against the robot
+  // (inside its bounding box) are left to the physics.
+  let robotBox = null;
+  function setRobotBox(min, max) { robotBox = { min: { ...min }, max: { ...max } }; }
+  function shiftLoose(dx, dy, dth, o) {
+    if (!robotBox || (Math.abs(dx) < 1e-6 && Math.abs(dy) < 1e-6 && Math.abs(dth) < 1e-7)) return;
+    const c = Math.cos(-dth), sn = Math.sin(-dth), b = robotBox;
+    const inBox = (x, y, z, m) => x > b.min.x - m && x < b.max.x + m && y > b.min.y - m && y < b.max.y + m && z < b.max.z + m;
+    for (const p of pieces) {
+      const t = p.rb.translation(), m = p.radius + 0.03;
+      if (inBox(t.x, t.y, t.z, m)) continue;
+      const rx = t.x - o.x - dx, ry = t.y - o.y - dy;
+      const nx = o.x + c * rx - sn * ry, ny = o.y + sn * rx + c * ry;
+      if (inBox(nx, ny, t.z, m)) continue;          // the robot drove onto it: let physics push it
+      p.rb.setTranslation({ x: nx, y: ny, z: t.z }, false);
+      if (dth) {
+        const v = p.rb.linvel(), w = p.rb.angvel();
+        p.rb.setLinvel({ x: c * v.x - sn * v.y, y: sn * v.x + c * v.y, z: v.z }, false);
+        p.rb.setAngvel({ x: c * w.x - sn * w.y, y: sn * w.x + c * w.y, z: w.z }, false);
+      }
+    }
+  }
+  function setFrameMotion(v, w, o) {
+    motion.v.x = v?.x || 0; motion.v.y = v?.y || 0; motion.w = w || 0;
+    if (o) { motion.o.x = o.x; motion.o.y = o.y; }
+  }
+  function frameStep() {
+    // dead-band: tiny estimate wobble must not keep nudging (and waking) a hopper full of balls
+    const tv = motion.v, tw = motion.w;
+    if (Math.abs(tv.x - applied.x) > 0.01 || Math.abs(tv.y - applied.y) > 0.01) { applied.x = tv.x; applied.y = tv.y; }
+    if (Math.abs(tw - applied.w) > 0.01) applied.w = tw;
+    if (Math.abs(tv.x) < 1e-3 && Math.abs(tv.y) < 1e-3) { applied.x = 0; applied.y = 0; }
+    if (Math.abs(tw) < 1e-3) applied.w = 0;
+    const now = { x: applied.x, y: applied.y, w: applied.w };
+    const prev = frameStep.prev || { x: 0, y: 0, w: 0 };
+    moved.x += now.x * DT; moved.y += now.y * DT; moved.w += now.w * DT;   // motion physics has accounted for
+    frameStep.prev = now;
+    const still = !now.x && !now.y && !now.w && !prev.x && !prev.y && !prev.w;
+    if (ground) {      // the field under the robot, seen from the robot: v_ground(p) = -V - w x (p - o)
+      ground.setTranslation({ x: motion.o.x, y: motion.o.y, z: groundZ }, false);
+      ground.setRotation(IDENT_Q, false);
+      ground.setLinvel({ x: -now.x, y: -now.y, z: 0 }, false);
+      ground.setAngvel({ x: 0, y: 0, z: -now.w }, false);
+    }
+    if (still) { moving = false; return; }
+    moving = true;
+    const changed = now.x !== prev.x || now.y !== prev.y || now.w !== prev.w;
+    if (!changed && !now.w) return;          // driving straight at a steady speed: nothing to correct
+    // rotating-frame ("fictitious") accelerations, per step:
+    //   dv = -dV - dt*(w x V) - 2dt*(w x v) - dt*w x (w x r) - dw x r      (planar, w along z)
+    const W = 0.5 * (now.w + prev.w), dW = now.w - prev.w, dVx = now.x - prev.x, dVy = now.y - prev.y;
+    const Vx = 0.5 * (now.x + prev.x), Vy = 0.5 * (now.y + prev.y);
+    const o = motion.o;
+    for (const p of pieces) {
+      const rb = p.rb, t = rb.translation(), lv = rb.linvel();
+      const rx = t.x - o.x, ry = t.y - o.y;
+      const dvx = -dVx + DT * W * Vy + 2 * DT * W * lv.y + DT * W * W * rx + dW * ry;
+      const dvy = -dVy - DT * W * Vx - 2 * DT * W * lv.x + DT * W * W * ry - dW * rx;
+      const dv = Math.hypot(dvx, dvy);
+      if (dv < 1e-5 && !dW) continue;
+      if (rb.isSleeping() && dv < 0.02) continue;       // a resting ball isn't woken by noise
+      rb.setLinvel({ x: lv.x + dvx, y: lv.y + dvy, z: lv.z }, true);
+      const av = rb.angvel();                           // spin seen from a turning robot
+      rb.setAngvel({ x: av.x + DT * W * av.y, y: av.y - DT * W * av.x, z: av.z - dW }, true);
+    }
   }
   // Game pieces are FOAM: a rigid core COMPRESS smaller than the ball (so nothing can squash it
   // flat) inside a springy shell handled by foamForces(). Squeezing a ball between rollers and a
@@ -455,14 +573,22 @@ export function createPhysics(RAPIER, opts = {}) {
       const outer = world.createCollider(RAPIER.ColliderDesc.ball(radius - 0.002).setDensity(0)
         .setFriction(PIECE_FRICTION).setRestitution(0.1).setCollisionGroups(groups(G_SHELL, G_SHELL)), rb);
       p.outer = outer.handle; pieceByCollider.set(outer.handle, p);
+      // Rigid near-full-size shell against the ROBOT. Foam alone lets a ball squash 15 mm into a
+      // wall, so a ball slowly squeezes through any gap a few mm smaller than it (an intake mouth).
+      // A real foam ball pressed by a pile barely deforms against a wall; only a spinning roller
+      // digs in. So: solid vs walls, mechanisms and stopped rollers; ignored vs spinning rollers.
+      const rs = world.createCollider(RAPIER.ColliderDesc.ball(radius - RIGID_SQUASH).setDensity(0)
+        .setFriction(PIECE_FRICTION).setRestitution(0.1).setCollisionGroups(groups(G_RSHELL, G_CHASSIS | G_MECH))
+        .setActiveHooks(RAPIER.ActiveHooks.FILTER_CONTACT_PAIRS), rb);
+      p.rshell = rs.handle; pieceByCollider.set(rs.handle, p); rshells.add(rs.handle);
     }
     return p;
   }
   const IDENT_Q = { x: 0, y: 0, z: 0, w: 1 };
   const cross = (a, b) => ({ x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x });
   function velAt(rb, pt) {      // velocity of a rigid body's material at a world point
-    if (!rb || !rb.isDynamic()) return { x: 0, y: 0, z: 0 };
-    const v = rb.linvel(), w = rb.angvel(), c = rb.worldCom();
+    if (!rb || rb.isFixed()) return { x: 0, y: 0, z: 0 };     // (the moving ground is kinematic)
+    const v = rb.linvel(), w = rb.angvel(), c = rb.isKinematic() ? rb.translation() : rb.worldCom();
     const r = { x: pt.x - c.x, y: pt.y - c.y, z: pt.z - c.z }, wr = cross(w, r);
     return { x: v.x + wr.x, y: v.y + wr.y, z: v.z + wr.z };
   }
@@ -494,23 +620,32 @@ export function createPhysics(RAPIER, opts = {}) {
       const found = [];
       world.intersectionsWithShape(c, IDENT_Q, p.shell, (col) => {
         if (pieceByCollider.has(col.handle)) return true;        // balls: handled by their outer colliders
+        if (col.handle === staticFloor) return true;             // pieces stand on the moving ground
         const other = null;
         const ct = col.contactShape(p.shell, c, IDENT_Q, 0);
         if (!ct || ct.distance >= 0) return true;
         found.push({ col, other, pen: -ct.distance, n: { ...ct.normal1 }, pt: { ...ct.point1 } });
         return true;
       });
-      if (!found.length) continue;
+      if (!found.length) { p.squash = null; continue; }
       found.sort((a, b) => b.pen - a.pen);
       const cs = [];
       for (const f of found) {
         if (!f.other && cs.some(m => !m.other && m.n.x * f.n.x + m.n.y * f.n.y + m.n.z * f.n.z > MERGE_COS)) continue;
         cs.push(f);
       }
+      // how the foam is squashed, for drawing it: deepest contact along n (n points from the surface
+      // into the ball), plus the deepest contact pressing from roughly the opposite side
+      { const a = cs[0], cap = COMPRESS * 1.2;
+        let back = 0; for (const f of cs) { const d = f.n.x * a.n.x + f.n.y * a.n.y + f.n.z * a.n.z; if (d < -0.5) back = Math.max(back, -d * f.pen); }
+        p.squash = { n: { ...a.n }, front: Math.min(a.pen, cap), back: Math.min(back, cap) }; }
       // the ball's velocity, updated locally as impulses are decided
       const m = p.mass, invI = 1 / (0.4 * m * p.radius * p.radius);
       const lv = p.rb.linvel(), av = p.rb.angvel();
-      const v = { x: lv.x, y: lv.y, z: lv.z }, w = { x: av.x, y: av.y, z: av.z };
+      // solve against the velocity the ball WILL have this step: Rapier adds gravity after these
+      // impulses, so solving on the current velocity let a wedged ball slip g*dt every step (creep)
+      const g = world.gravity;
+      const v = { x: lv.x + g.x * DT, y: lv.y + g.y * DT, z: lv.z + g.z * DT }, w = { x: av.x, y: av.y, z: av.z };
       const push = (f, J) => {         // apply impulse J at f.pt to the local ball state
         v.x += J.x / m; v.y += J.y / m; v.z += J.z / m;
         const t = cross(f.r, J); w.x += t.x * invI; w.y += t.y * invI; w.z += t.z * invI;
@@ -556,7 +691,7 @@ export function createPhysics(RAPIER, opts = {}) {
         // rolling resistance: foam deforms as it rolls, so rolling over a surface costs energy.
         // Without it a ball between two parallel rollers rolls along them forever, bouncing
         // wall to wall ("jostling" with every roller stopped).
-        const wo = f.ob && f.ob.isDynamic() ? f.ob.angvel() : { x: 0, y: 0, z: 0 };
+        const wo = f.ob && !f.ob.isFixed() ? f.ob.angvel() : { x: 0, y: 0, z: 0 };
         const wr = { x: w.x - wo.x, y: w.y - wo.y, z: w.z - wo.z };
         const wn = wr.x * f.n.x + wr.y * f.n.y + wr.z * f.n.z;   // spin about the normal: not rolling
         const roll = { x: wr.x - wn * f.n.x, y: wr.y - wn * f.n.y, z: wr.z - wn * f.n.z };
@@ -574,7 +709,7 @@ export function createPhysics(RAPIER, opts = {}) {
   }
   function removePiece(p) {
     const i = pieces.indexOf(p); if (i >= 0) pieces.splice(i, 1);
-    pieceByCollider.delete(p.col); pieceByCollider.delete(p.outer);
+    pieceByCollider.delete(p.col); pieceByCollider.delete(p.outer); pieceByCollider.delete(p.rshell); rshells.delete(p.rshell);
     world.removeRigidBody(p.rb);
   }
   function step(dt) {
@@ -583,9 +718,10 @@ export function createPhysics(RAPIER, opts = {}) {
     acc = Math.min(acc + dt, DT * MAX_SUBSTEPS);
     let n = 0;
     while (acc >= DT) {
-      rampTargets(); if (foam && pieces.length) foamForces(); world.step(events, hooks); acc -= DT; n++;
+      rampTargets(); frameStep(); if (foam && pieces.length) foamForces(); world.step(events, hooks); acc -= DT; n++;
       if (++stepCount % 6 === 0) {
         if (releaseGhosts && disabled.size) releaseSeparated();
+        if (shellGhosts.size) releaseShellGhosts();
         reghostDeep();
       }
     }
@@ -617,10 +753,20 @@ export function createPhysics(RAPIER, opts = {}) {
     const dirs = [[0, 0, -1], [1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]];
     const enclosed = dirs.every(d => world.castRay(new RAPIER.Ray(c, { x: d[0], y: d[1], z: d[2] }), reach, true,
       undefined, undefined, undefined, undefined, isRobot) !== null);
-    return { clear, enclosed };
+    // supported: dropped straight down, the whole ball lands on the robot instead of slipping through a
+    // gap to the carpet (a thin ray finds the kicker bar; a 15 cm ball falls right past it)
+    let supported = enclosed;
+    if (enclosed && isFinite(floorZ)) {
+      const drop = c.z - r - floorZ;
+      const hit = drop > 0 && world.castShape(c, IDENT_Q, { x: 0, y: 0, z: -1 }, new RAPIER.Ball(r), 0, drop, true,
+        undefined, undefined, undefined, undefined, isRobot);
+      // ...and lands on something it can rest on, not the edge of a roller it rolls straight off
+      supported = !!hit && (hit.normal1?.z ?? 1) > 0.5;
+    }
+    return { clear, enclosed, supported };
   }
 
-  const sim = { world, build, setTarget, setSpin, setFree, addFloor, spawnPiece, removePiece, probe, step, bodyPose,
+  const sim = { world, build, setTarget, setSpin, setFree, addFloor, spawnPiece, removePiece, probe, step, bodyPose, setFrameMotion, takeMoved, setRobotBox, shiftLoose,
                 jointValue, partBody, colliderPart, bodies, pieces, joints: new Map(), stats: null, free };
   return sim;
 }

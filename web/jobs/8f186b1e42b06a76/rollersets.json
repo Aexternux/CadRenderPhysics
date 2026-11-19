@@ -1,7 +1,7 @@
 [
  {
   "id": "smwk13hu1",
-  "name": "Roller set 1",
+  "name": "Drum",
   "rollers": [
    {
     "axis": {
@@ -71,7 +71,7 @@
  },
  {
   "id": "smwk14ld4",
-  "name": "Roller set 2",
+  "name": "Indexer",
   "rollers": [
    {
     "axis": {
@@ -288,7 +288,7 @@
  },
  {
   "id": "smwk8szz9",
-  "name": "Roller set 3",
+  "name": "Intake",
   "rollers": [
    {
     "axis": {

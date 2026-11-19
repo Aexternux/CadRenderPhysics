@@ -5,6 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FRC 115 Robot Simulator</title>
 <style>
+  #ntPanel { position:fixed; right:16px; top:68px; width:340px; max-height:calc(100vh - 140px); display:none;
+    flex-direction:column; background:rgba(23,28,36,.95); border:1px solid var(--line); border-radius:12px;
+    z-index:11; font-size:12px; }
+  #ntPanel.show { display:flex; }
+  #ntPanel h3 { margin:0; font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
+  #ntPanel .sec { padding:10px 12px; border-bottom:1px solid var(--line); }
+  #ntPanel input.txt { background:#0f1318; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:4px 7px; font-size:12px; }
+  #ntTopics { overflow:auto; flex:1; min-height:120px; padding:4px 0; }
+  .ntrow { display:flex; gap:6px; align-items:center; padding:2px 12px; cursor:grab; white-space:nowrap; }
+  .ntrow:hover { background:#1d2430; }
+  .ntrow .nm { flex:1; overflow:hidden; text-overflow:ellipsis; }
+  .ntrow .v { color:var(--muted); font-variant-numeric:tabular-nums; max-width:130px; overflow:hidden; text-overflow:ellipsis; }
+  .ntrow .car { width:10px; flex:none; color:var(--muted); font-size:10px; }
+  .ntrow .ic { width:16px; flex:none; text-align:center; font-size:11px; color:var(--accent); }
+  .ntrow.folder { cursor:pointer; font-weight:600; color:#d3d8df; }
+  .ntrow.folder .ic { filter:saturate(.6); }
+  .ntrow.field .nm { color:#b8c0cc; }
+  .ntrow.field .ic { color:var(--muted); }
+  .ntrow .tag { flex:none; font-size:9.5px; color:var(--muted); border:1px solid var(--line); border-radius:4px; padding:0 4px; }
+  .ntrow.folder .tag { border-radius:8px; background:#11151b; }
+  #ntTopics .ntrow { padding-top:3px; padding-bottom:3px; }
+  .ntslot { border:1px dashed var(--line); border-radius:8px; padding:7px 9px; color:var(--muted); margin-top:6px; }
+  body.ntdragging [data-drop] { outline:1px dashed var(--accent); outline-offset:2px; border-radius:6px; }
+  [data-drop].drophover { outline:2px solid var(--accent) !important; background:rgba(157,107,214,.15); }
+  .ntbind { display:flex; gap:4px; align-items:center; margin:4px 0; flex-wrap:wrap; }
+  .ntbind .tgt { color:var(--text); }
+  .ntbind .src { color:var(--muted); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:60px; }
+  .ntbind input { width:40px; padding:2px 4px !important; }
+  .ntbind .tgt { max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ntbind { flex-wrap:nowrap; }
   :root { --bg:#0e1116; --panel:#171c24; --accent:#9d6bd6; --accent2:#7d4bbf;
     --text:#e6e8ec; --muted:#8b94a3; --line:#232a34; }
   * { box-sizing:border-box; }
@@ -107,6 +137,7 @@
         <input type="checkbox" id="selfCol"> hit chassis</label>
     </span>
     <span id="physStatus" class="small" style="margin:0"></span>
+    <button class="btn ghost" id="ntBtn" title="Read live values from the robot (NetworkTables / AdvantageKit) and drag them onto the model">📡 NetworkTables</button>
     <button class="btn ghost" id="physBtn" title="Simulate contacts: moving parts push game pieces and each other">⚛ Physics: off</button>
     <button class="btn" id="openImport">Import CAD ▸</button>
   </div>
@@ -159,6 +190,38 @@
         <button class="btn" id="grpCreate">Create</button>
       </div>
     </div>
+  </div>
+
+  <!-- NetworkTables panel -->
+  <div id="ntPanel">
+    <div class="sec">
+      <div style="display:flex; justify-content:space-between; align-items:center;"><h3>NetworkTables</h3>
+        <span class="small" id="ntStatus" style="margin:0">disconnected</span></div>
+      <div style="display:flex; gap:5px; margin-top:8px;">
+        <input class="txt" id="ntHost" style="flex:1; min-width:0" placeholder="robot address" title="127.0.0.1 = robot simulation on this computer; 10.1.15.2 = the robot">
+        <button class="iconbtn" id="ntSim" title="Robot simulation running on this computer">sim</button>
+        <button class="iconbtn" id="ntRobot" title="Team 115 robot (10.1.15.2)">robot</button>
+        <button class="btn sm" id="ntConnect" style="padding:0 10px; min-width:84px">Connect</button>
+      </div>
+    </div>
+    <div class="sec">
+      <h3>Robot on the field</h3>
+      <div class="ntslot" data-drop="pose" data-drop-label="Robot pose" id="ntPoseSlot">drop a Pose2d / Pose3d here (e.g. Odometry/Robot)</div>
+      <div style="display:flex; gap:10px; align-items:center; margin-top:7px; flex-wrap:wrap;">
+        <label><input type="checkbox" id="ntField"> show field</label>
+        <label><input type="checkbox" id="ntFollow" checked> camera follows</label>
+        <label title="Which way the robot's front (robot +X) points in the CAD">front
+          <select id="ntFront" class="txt" style="padding:2px"><option>+Y</option><option>-Y</option><option>+X</option><option>-X</option></select></label>
+      </div>
+    </div>
+    <div class="sec" id="ntBindSec" style="display:none"><h3>Linked values</h3><div id="ntBinds"></div></div>
+    <div class="sec" style="border-bottom:0; padding-bottom:4px;">
+      <div style="display:flex; gap:5px;">
+        <input class="txt" id="ntFilter" style="flex:1; min-width:0;" placeholder="filter topics…">
+        <button class="iconbtn" id="ntCollapse" title="Collapse all folders">⊟</button></div>
+      <p class="small" style="margin:6px 0 0">Click folders to open them. Drag any value (◆) onto a roller set's rps, any slider, or the pose slot.</p>
+    </div>
+    <div id="ntTopics"></div>
   </div>
 
   <!-- pivot-from-hinge modal -->
@@ -215,6 +278,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { guessSwinging, fitHingeAxis, mirrorTwins } from '/hinge.js';
+import { NT4Client, pick, asPose } from '/nt4.js';
 
 const $ = (id) => document.getElementById(id);
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -234,10 +298,22 @@ const d1 = new THREE.DirectionalLight(0xffffff, 1.4); d1.position.set(1,1,2); sc
 const d2 = new THREE.DirectionalLight(0xffffff, 0.6); d2.position.set(-1,-1,1); scene.add(d2);
 addEventListener('resize', () => { camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight); });
+// Everything that belongs to the robot lives under cadRoot, in CAD coordinates. In field view the
+// robot is moved by its pose: robotRoot = field pose, robotFront turns the CAD's front onto robot +X,
+// cadRoot shifts the robot's centre/floor to the origin. With the field off all three are identity.
+const robotRoot=new THREE.Group(), robotFront=new THREE.Group(), cadRoot=new THREE.Group();
+scene.add(robotRoot); robotRoot.add(robotFront); robotFront.add(cadRoot);
+const _cadInv=new THREE.Matrix4();
+let ntBindings=[], fieldOn=false;      // NetworkTables links / field view (see below; used by the frame loop)
+function toCad(v){ cadRoot.updateMatrixWorld(); return v.clone().applyMatrix4(_cadInv.copy(cadRoot.matrixWorld).invert()); }
+function cadBox(obj){ cadRoot.updateMatrixWorld(); return new THREE.Box3().setFromObject(obj).applyMatrix4(_cadInv.copy(cadRoot.matrixWorld).invert()); }
 let sim=null;          // physics simulation (null = kinematic mode)
 let lastFrame=performance.now();
 (function loop(){ requestAnimationFrame(loop);
   const now=performance.now(), dt=Math.min(0.05,(now-lastFrame)/1000); lastFrame=now;
+  if (ntBindings.length) ntApply();
+  if (fieldOn) updateRobotPose(dt);
+  if (fieldOn) followRobot();
   if (sim) physicsTick(dt);
   controls.update(); renderer.render(scene, camera); })();
 
@@ -297,9 +373,9 @@ function driveSub(sub, value){
 // PCA: dominant axis of the selected geometry (a roller's spin axis, an arm's long axis)
 function fitAxis(keys){
   const pts=[];
-  for (const k of keys){ const m=meshesByKey[k]; if (!m) continue; m.updateMatrixWorld();
+  for (const k of keys){ const m=meshesByKey[k]; if (!m || !restMat[k]) continue;
     const pos=m.geometry.attributes.position, step=Math.max(1, Math.floor(pos.count/250));
-    for (let i=0;i<pos.count;i+=step){ pts.push(new THREE.Vector3().fromBufferAttribute(pos,i).applyMatrix4(m.matrixWorld)); } }
+    for (let i=0;i<pos.count;i+=step){ pts.push(new THREE.Vector3().fromBufferAttribute(pos,i).applyMatrix4(restMat[k])); } }
   const c=new THREE.Vector3(); pts.forEach(p=>c.add(p)); c.multiplyScalar(1/Math.max(1,pts.length));
   let xx=0,xy=0,xz=0,yy=0,yz=0,zz=0;
   for (const p of pts){ const dx=p.x-c.x,dy=p.y-c.y,dz=p.z-c.z;
@@ -325,15 +401,15 @@ function showAxis(sub){
   const line=new THREE.Line(g, new THREE.LineBasicMaterial({color:0x2fae6b}));
   const knob=new THREE.Mesh(new THREE.SphereGeometry(modelSpan*0.01,12,12), new THREE.MeshBasicMaterial({color:0x2fae6b}));
   knob.position.copy(o);
-  const grp=new THREE.Group(); grp.add(line,knob); scene.add(grp); axisHelpers[sub.id]=grp;
+  const grp=new THREE.Group(); grp.add(line,knob); cadRoot.add(grp); axisHelpers[sub.id]=grp;
 }
-function hideAxis(id){ if (axisHelpers[id]){ scene.remove(axisHelpers[id]); delete axisHelpers[id]; } }
+function hideAxis(id){ if (axisHelpers[id]){ cadRoot.remove(axisHelpers[id]); delete axisHelpers[id]; } }
 
 // ---------- roller spin markers ----------
 // A round roller spinning about its own axis looks identical frame to frame. Each roller gets a
 // circular arrow (an open ring + arrowhead) just past its end face. The marker is registered like
 // a part (meshesByKey/restMat) so the same joint transforms that turn the roller turn the arrow.
-const markerGroup=new THREE.Group(); scene.add(markerGroup);
+const markerGroup=new THREE.Group(); cadRoot.add(markerGroup);
 const SPIN_COLOR=0xffa23a;
 function removeMarker(key){
   const m=meshesByKey[key]; if (!m) return;
@@ -456,7 +532,7 @@ renderer.domElement.addEventListener('pointerup', e=>{
   if (!downXY) return; const moved=Math.hypot(e.clientX-downXY[0], e.clientY-downXY[1]); downXY=null;
   if (moved>5 || (!selectMode && !pickAxisFor)) return;
   const hit=pickMesh(e); if (!hit) return;
-  if (pickAxisFor){ pickPts.push(hit.point.clone());
+  if (pickAxisFor){ pickPts.push(toCad(hit.point));
     if (pickPts.length===2){ const sub=pickAxisFor;
       sub.axis={ origin:[pickPts[0].x,pickPts[0].y,pickPts[0].z],
                  dir:[pickPts[1].x-pickPts[0].x, pickPts[1].y-pickPts[0].y, pickPts[1].z-pickPts[0].z] };
@@ -471,6 +547,351 @@ renderer.domElement.addEventListener('pointerup', e=>{
   else { selected.add(k); highlight(hit.object,true); }
   updSelBar();
 });
+
+// ---------- NetworkTables / AdvantageKit ----------
+// Connects to the robot's (or the robot simulation's) NT4 server and lists every topic, live.
+// Drag a topic -- or one field of a struct -- onto: the robot-pose slot (the robot then drives
+// around a field), a roller set's rps box, or any mechanism slider. Links are kept per robot.
+const FIELD_L=16.541, FIELD_W=8.069;            // m, WPILib field coordinates (blue-alliance origin)
+const FRONT_YAW={'+X':0, '+Y':-Math.PI/2, '-X':Math.PI, '-Y':Math.PI/2};
+let ntDirty=true, fieldGroup=null;
+const ntOpenRows=new Set(), ntValEls=new Map(), _Z=new THREE.Vector3(0,0,1);
+const nt=new NT4Client({ name:'CadSim',
+  onTopics:()=>{ ntDirty=true; },
+  onUpdate:(t)=>{ if (!t._seen){ t._seen=true; if (expandable(t.value)) ntDirty=true; } },
+  onStatus:(st)=>{ $('ntStatus').textContent=st; $('ntConnect').textContent=nt.wantOpen?'Disconnect':'Connect';
+    $('ntStatus').style.color = st==='connected' ? '#2fae6b' : ''; } });
+try { $('ntHost').value=localStorage.getItem('ntHost')||'127.0.0.1'; } catch(e){ $('ntHost').value='127.0.0.1'; }
+$('ntBtn').onclick=()=>{ const on=!$('ntPanel').classList.contains('show'); $('ntPanel').classList.toggle('show', on);
+  $('ntBtn').classList.toggle('active', on); if (on && !nt.wantOpen) ntConnect(); };
+function ntConnect(){ const h=$('ntHost').value.trim()||'127.0.0.1'; try { localStorage.setItem('ntHost',h); } catch(e){}
+  nt.connect(h); }
+$('ntConnect').onclick=()=>{ nt.wantOpen ? nt.disconnect() : ntConnect(); };
+$('ntSim').onclick=()=>{ $('ntHost').value='127.0.0.1'; ntConnect(); };
+$('ntRobot').onclick=()=>{ $('ntHost').value='10.1.15.2'; ntConnect(); };
+$('ntHost').addEventListener('keydown', e=>{ if (e.key==='Enter') ntConnect(); });
+$('ntFilter').addEventListener('input', ()=>{ ntDirty=true; });
+
+const shortTopic=(n)=>n.replace(/^\/AdvantageKit\/RealOutputs\//,'Outputs/').replace(/^\/AdvantageKit\/ReplayOutputs\//,'Replay/').replace(/^\/AdvantageKit\//,'AK/');
+function fmtVal(v){
+  if (v==null) return '';
+  if (typeof v==='number') return Number.isInteger(v) ? String(v) : v.toFixed(3);
+  if (typeof v==='boolean') return v ? 'true' : 'false';
+  if (typeof v==='string') return v.length>18 ? `"${v.slice(0,16)}…"` : `"${v}"`;
+  if (v instanceof Uint8Array) return `${v.length} bytes`;
+  const p=asPose(v); if (p && !Array.isArray(v)) return `x ${p.x.toFixed(2)} y ${p.y.toFixed(2)}` + (p.yaw!=null ? ` ${(((p.yaw*180/Math.PI)%360+540)%360-180).toFixed(0)}°` : '');
+  if (Array.isArray(v)) return v.length<=3 && v.every(x=>typeof x==='number') ? `[${v.map(x=>fmtVal(x)).join(', ')}]` : `[${v.length}]`;
+  return '{…}';
+}
+function leaves(v, path='', out=[], depth=0){       // numeric/boolean fields inside a struct / array
+  if (out.length>60 || depth>4 || v==null) return out;
+  if (typeof v==='number' || typeof v==='boolean'){ out.push({ path, v }); return out; }
+  if (v instanceof Uint8Array || typeof v==='string') return out;
+  for (const [k,x] of Object.entries(v)) leaves(x, path ? `${path}.${k}` : k, out, depth+1);
+  return out;
+}
+const expandable=(v)=>v!=null && typeof v==='object' && !(v instanceof Uint8Array);
+// ---- topic tree: /AdvantageKit/RealOutputs/Shooter/BaseRPS -> folders AdvantageKit › RealOutputs › Shooter
+let ntOpen;                                   // open folders / expanded structs ("/a/b", "/a/b/topic#field")
+try { ntOpen=new Set(JSON.parse(localStorage.getItem('ntOpen')||'null') || ['/AdvantageKit', '/AdvantageKit/RealOutputs']); }
+catch(e){ ntOpen=new Set(['/AdvantageKit', '/AdvantageKit/RealOutputs']); }
+const saveOpen=()=>{ try { localStorage.setItem('ntOpen', JSON.stringify([...ntOpen])); } catch(e){} };
+function toggleOpen(key){ ntOpen.has(key) ? ntOpen.delete(key) : ntOpen.add(key); saveOpen(); ntDirty=true; }
+function typeTag(t){
+  const ty=t.type||'';
+  if (ty.startsWith('struct:')) return ty.slice(7);
+  return { double:'num', float:'num', int:'int', boolean:'bool', string:'str', 'double[]':'num[]', 'float[]':'num[]',
+           'int[]':'int[]', 'boolean[]':'bool[]', 'string[]':'str[]', json:'json', raw:'raw' }[ty] || ty;
+}
+const INDENT=14;
+function ntRow({ depth, label, kind, open, onToggle, drag, tag, title }){
+  const row=document.createElement('div'); row.className='ntrow '+kind; row.style.paddingLeft=(8+depth*INDENT)+'px';
+  const car=document.createElement('span'); car.className='car'; car.textContent=onToggle ? (open?'▾':'▸') : '';
+  const ic=document.createElement('span'); ic.className='ic'; ic.textContent= kind==='folder' ? (open?'📂':'📁') : kind==='field' ? '·' : '◆';
+  const nm=document.createElement('span'); nm.className='nm'; nm.textContent=label; if (title) nm.title=title;
+  row.append(car, ic, nm);
+  if (tag){ const tg=document.createElement('span'); tg.className='tag'; tg.textContent=tag; row.append(tg); }
+  const v=document.createElement('span'); v.className='v'; row.append(v);
+  if (onToggle){ row.addEventListener('click', e=>{ if (kind==='folder' || e.target===car || e.target===ic) onToggle(); });
+                 if (kind!=='folder') car.style.cursor='pointer'; }
+  if (drag){ row.draggable=true;
+    row.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', JSON.stringify(drag));
+      e.dataTransfer.effectAllowed='link'; document.body.classList.add('ntdragging'); });
+    row.addEventListener('dragend', ()=>document.body.classList.remove('ntdragging')); }
+  else row.style.cursor='pointer';
+  return { row, v };
+}
+function buildTree(list){
+  const root={ name:'', path:'', folders:new Map(), topics:[], count:0 };
+  for (const t of list){
+    const parts=t.name.split('/').filter(Boolean); let node=root, path='';
+    for (let i=0; i<parts.length-1; i++){ path+='/'+parts[i];
+      let f=node.folders.get(parts[i]); if (!f){ f={ name:parts[i], path, folders:new Map(), topics:[], count:0 }; node.folders.set(parts[i], f); }
+      node.count++; node=f; }
+    node.count++; node.topics.push({ t, label:parts[parts.length-1] || t.name });
+  }
+  return root;
+}
+function renderTopics(){
+  const host=$('ntTopics'); host.innerHTML=''; ntValEls.clear();
+  const f=$('ntFilter').value.trim().toLowerCase();
+  const list=[...nt.topics.values()].filter(t=>!/(^|\/)\.schema(\/|$)/.test(t.name) && !t.name.startsWith('$')
+    && (!f || t.name.toLowerCase().includes(f)));
+  if (!list.length){ host.innerHTML=`<p class="small" style="padding:0 12px">${nt.status==='connected' ? 'no topics' + (f?' match the filter':' yet') : 'not connected — start the robot simulation (or connect to the robot), then Connect'}</p>`; return; }
+  let rows=0;
+  const fields=(t, v, path, depth)=>{          // a struct / array's fields, as nested rows
+    for (const [k,x] of Object.entries(v)){
+      if (rows++>1500) return;
+      const fp=path ? `${path}.${k}` : k, key=`${t.name}#${fp}`, sub=expandable(x), open=ntOpen.has(key);
+      const r=ntRow({ depth, label:k, kind:'field', open, onToggle: sub ? ()=>toggleOpen(key) : null,
+        drag:{ topic:t.name, path:fp }, title:`${t.name} › ${fp}` });
+      ntValEls.set(key, r.v); host.append(r.row);
+      if (sub && open) fields(t, x, fp, depth+1);
+    }
+  };
+  const walk=(node, depth)=>{
+    for (const fo of [...node.folders.values()].sort((a,b)=>a.name.localeCompare(b.name))){
+      if (rows++>1500) return;
+      const open = f ? true : ntOpen.has(fo.path);      // filtering: show every match in place
+      const r=ntRow({ depth, label:fo.name, kind:'folder', open, onToggle:()=>toggleOpen(fo.path), tag:String(fo.count), title:fo.path });
+      host.append(r.row);
+      if (open) walk(fo, depth+1);
+    }
+    for (const { t, label } of node.topics.sort((a,b)=>a.label.localeCompare(b.label))){
+      if (rows++>1500) return;
+      const sub=expandable(t.value), open=ntOpen.has(t.name);
+      const r=ntRow({ depth, label, kind:'topic', open, onToggle: sub ? ()=>toggleOpen(t.name) : null,
+        drag:{ topic:t.name, path:'' }, tag:typeTag(t), title:`${t.name}  (${t.type}) — drag onto the model` });
+      ntValEls.set(t.name, r.v); host.append(r.row);
+      if (sub && open) fields(t, t.value, '', depth+1);
+    }
+  };
+  walk(buildTree(list), 0);
+}
+$('ntCollapse').onclick=()=>{ ntOpen.clear(); saveOpen(); ntDirty=true; };
+function refreshValues(){
+  for (const [key,el] of ntValEls){ const [name,path]=key.split('#'); const t=nt.topics.get(name); if (!t) continue;
+    const v=path ? pick(t.value, path) : t.value; el.textContent=fmtVal(v); }
+}
+// slow UI ticker: topic list + linked-value readouts (the model itself updates every frame)
+setInterval(()=>{
+  if (!$('ntPanel').classList.contains('show')) return;
+  if (ntDirty){ ntDirty=false; renderTopics(); }
+  refreshValues();
+  for (const b of ntBindings) if (b._el) b._el.textContent = b._last==null ? '–' : fmtVal(b._last);
+  for (const set of rollerSets) if (set._rpsEl && set._ntDriven && document.activeElement!==set._rpsEl) set._rpsEl.value=(+set.rps).toFixed(1);
+}, 120);
+
+// ---- drag & drop onto the model's controls ----
+let dropHover=null;
+document.addEventListener('dragover', e=>{
+  const t=e.target.closest && e.target.closest('[data-drop]');
+  if (dropHover && dropHover!==t) dropHover.classList.remove('drophover');
+  dropHover=t; if (!t) return;
+  e.preventDefault(); e.dataTransfer.dropEffect='link'; t.classList.add('drophover');
+});
+document.addEventListener('drop', e=>{
+  document.body.classList.remove('ntdragging');
+  const t=e.target.closest && e.target.closest('[data-drop]'); if (dropHover) dropHover.classList.remove('drophover');
+  if (!t) return;
+  let src; try { src=JSON.parse(e.dataTransfer.getData('text/plain')); } catch(err){ return; }
+  if (!src || !src.topic) return;
+  e.preventDefault();
+  addBinding(t.dataset.drop, t.dataset.dropLabel || t.dataset.drop, src.topic, src.path||'');
+});
+function addBinding(target, label, topic, path){
+  const t=nt.topics.get(topic), v=t && pick(t.value, path);
+  if (target==='pose'){
+    if (v!=null && !asPose(v)){ $('ntStatus').textContent='that isn’t a pose — drop a Pose2d/Pose3d (or [x, y, θ])'; return; }
+  } else if (v!=null && typeof v!=='number' && typeof v!=='boolean'){
+    $('ntStatus').textContent='drop a number here — expand a struct (▸) to drag one of its fields'; return; }
+  // radians -> degrees for a pivot, from the topic's name
+  let scale=1;
+  const j=target.startsWith('joint:') ? autoJoints.find(x=>'joint:'+x.id===target) : null;
+  const sub=target.startsWith('user:') ? subsystems.find(x=>'user:'+x.id===target) : null;
+  const isPivot=(j && j.type!=='slider' && !j.continuous) || (sub && sub.type!=='slider' && sub.type!=='roller');
+  if (isPivot && /rad/i.test(topic+path)) scale=+(180/Math.PI).toFixed(5);
+  ntBindings=ntBindings.filter(b=>b.target!==target);
+  ntBindings.push({ target, label, topic, path, scale, offset:0 });
+  if (target==='pose' && !fieldOn){ $('ntField').checked=true; setFieldMode(true); }
+  saveBindings(); renderBindings();
+}
+function loadBindings(){
+  try { ntBindings=JSON.parse(localStorage.getItem('ntBindings:'+currentJob)||'[]'); } catch(e){ ntBindings=[]; }
+  try { $('ntFront').value=localStorage.getItem('ntFront:'+currentJob)||'+Y'; } catch(e){}
+  renderBindings();
+}
+function saveBindings(){
+  const clean=ntBindings.map(b=>Object.fromEntries(Object.entries(b).filter(([k])=>!k.startsWith('_'))));
+  try { localStorage.setItem('ntBindings:'+currentJob, JSON.stringify(clean)); } catch(e){}
+}
+function releaseBinding(b){
+  const [kind,id]=[b.target.slice(0,b.target.indexOf(':')), b.target.slice(b.target.indexOf(':')+1)];
+  if (kind==='rollerset'){ const set=rollerSets.find(s2=>s2.id===id); if (set){ set._ntDriven=false; set._spin=false; applySetSpin(set); renderRollerSets(); } }
+}
+function renderBindings(){
+  const host=$('ntBinds'); host.innerHTML=''; $('ntBindSec').style.display=ntBindings.length?'':'none';
+  const slot=$('ntPoseSlot'), pb=ntBindings.find(b=>b.target==='pose');
+  slot.textContent = pb ? `pose ⟵ ${shortTopic(pb.topic)}${pb.path?' › '+pb.path:''}` : 'drop a Pose2d / Pose3d here (e.g. Odometry/Robot)';
+  slot.style.color = pb ? 'var(--text)' : '';
+  for (const b of ntBindings){
+    if (b.target==='pose') continue;
+    const row=document.createElement('div'); row.className='ntbind';
+    const tg=document.createElement('span'); tg.className='tgt'; tg.textContent=b.label;
+    const src=document.createElement('span'); src.className='src'; src.textContent='⟵ '+shortTopic(b.topic)+(b.path?' › '+b.path:''); src.title=b.topic+(b.path?' › '+b.path:'');
+    const val=document.createElement('span'); val.className='small'; val.style.margin='0'; b._el=val;
+    const sc=document.createElement('input'); sc.className='txt'; sc.type='number'; sc.step='any'; sc.value=b.scale;
+    sc.title='multiply by (e.g. a gear ratio, or 57.2958 for radians → degrees)';
+    const of=document.createElement('input'); of.className='txt'; of.type='number'; of.step='any'; of.value=b.offset; of.title='then add';
+    sc.onchange=()=>{ b.scale=+sc.value||0; saveBindings(); }; of.onchange=()=>{ b.offset=+of.value||0; saveBindings(); };
+    const rm=document.createElement('button'); rm.className='iconbtn'; rm.textContent='🗑'; rm.title='unlink';
+    rm.onclick=()=>{ releaseBinding(b); ntBindings=ntBindings.filter(x=>x!==b); saveBindings(); renderBindings(); };
+    const x=document.createElement('span'); x.className='small'; x.style.margin='0'; x.textContent='×';
+    const plus=document.createElement('span'); plus.className='small'; plus.style.margin='0'; plus.textContent='+';
+    row.append(tg, src, val, x, sc, plus, of, rm); host.append(row);
+  }
+  $('ntPoseRm')?.remove();
+  if (pb){ const rm=document.createElement('button'); rm.className='iconbtn'; rm.id='ntPoseRm'; rm.textContent='unlink pose'; rm.style.marginTop='6px';
+    rm.onclick=()=>{ ntBindings=ntBindings.filter(x=>x!==pb); saveBindings(); renderBindings(); setRobotPose(null); };
+    slot.after(rm); }
+}
+// apply the latest values to the model -- every frame
+function ntValue(b){
+  const t=nt.topics.get(b.topic); if (!t) return null;
+  let v=pick(t.value, b.path); if (typeof v==='boolean') v=v?1:0;
+  return typeof v==='number' && isFinite(v) ? v*b.scale+b.offset : null;
+}
+function ntApply(){
+  for (const b of ntBindings){
+    if (b.target==='pose'){ const t=nt.topics.get(b.topic); const p=t && asPose(pick(t.value, b.path));
+      b._last = p ? t.value : null; if (p) setRobotPose(p, t.time); continue; }
+    const v=ntValue(b); b._last=v; if (v==null) continue;
+    const i=b.target.indexOf(':'), kind=b.target.slice(0,i), id=b.target.slice(i+1);
+    if (kind==='rollerset'){ const set=rollerSets.find(s2=>s2.id===id); if (!set) continue;
+      const spin=Math.abs(v)>0.05; set._ntDriven=true;
+      if (Math.abs(set.rps-v)>0.01 || !!set._spin!==spin){ set.rps=v; set._spin=spin; applySetSpin(set); } }
+    else if (kind==='joint'){ const j=autoJoints.find(x=>x.id===id); if (!j) continue;
+      if (j.continuous){ const spin=Math.abs(v)>0.05;            // a roller: the value is its speed (rps)
+        if (!!j._spin!==spin){ j._spin=spin; renderSpinState?.(); }
+        if (sim) sim.setSpin(j.id, v*360); continue; }
+      const c=Math.min(Math.max(v+(j.zero||0), Math.min(j.min,j.max)), Math.max(j.min,j.max));
+      if (Math.abs(c-j.value)>1e-4 && j._set) j._set(c); }
+    else if (kind==='user'){ const sub=subsystems.find(x=>x.id===id); if (!sub) continue;
+      const lo=+(sub._rng?.min ?? -180), hi=+(sub._rng?.max ?? 180), c=Math.min(Math.max(v+(sub.zero||0),lo),hi);
+      if (sub.type==='roller'){ const spin=Math.abs(v)>0.05; sub._spin=spin; if (sim) sim.setSpin('user:'+sub.id, v*360); continue; }
+      if (Math.abs(c-(sub._val||0))<1e-4) continue;
+      sub._val=c; if (sim) sim.setTarget('user:'+sub.id, c); else driveSub(sub, c);
+      if (sub._rng){ sub._rng.value=c; sub._valEl.textContent=fmtPos(sub.type, c-(sub.zero||0)); } }
+  }
+}
+
+// ---- field view ----
+function buildField(){
+  const g=new THREE.Group();
+  const carpet=new THREE.Mesh(new THREE.PlaneGeometry(FIELD_L, FIELD_W),
+    new THREE.MeshStandardMaterial({ color:0x2a3038, roughness:1 }));
+  carpet.position.set(FIELD_L/2, FIELD_W/2, -0.002); g.add(carpet);
+  const lines=[], add=(a,b)=>lines.push(new THREE.Vector3(a[0],a[1],0.001), new THREE.Vector3(b[0],b[1],0.001));
+  for (let x=1; x<FIELD_L; x++) add([x,0],[x,FIELD_W]);                     // 1 m grid
+  for (let y=1; y<FIELD_W; y++) add([0,y],[FIELD_L,y]);
+  g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lines), new THREE.LineBasicMaterial({ color:0x3a424d })));
+  const edge=[[0,0],[FIELD_L,0],[FIELD_L,FIELD_W],[0,FIELD_W],[0,0]].map(([x,y])=>new THREE.Vector3(x,y,0.003));
+  g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(edge), new THREE.LineBasicMaterial({ color:0xd8dce2 })));
+  g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(FIELD_L/2,0,0.003), new THREE.Vector3(FIELD_L/2,FIELD_W,0.003)]),
+    new THREE.LineBasicMaterial({ color:0xd8dce2 })));
+  // alliance ends: blue at x=0 (WPILib origin), red at the far end
+  for (const [x,c] of [[0.05,0x3d7bff],[FIELD_L-0.05,0xff4d4d]]){
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(0.1, FIELD_W), new THREE.MeshBasicMaterial({ color:c }));
+    m.position.set(x, FIELD_W/2, 0.002); g.add(m); }
+  // origin axes: +X red, +Y green (so a pose can be sanity-checked)
+  g.add(new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0.01), 1, 0xff5555, 0.2, 0.1));
+  g.add(new THREE.ArrowHelper(new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,0.01), 1, 0x55dd55, 0.2, 0.1));
+  return g;
+}
+// The robot pose arrives at the robot loop's rate (~50 Hz, unevenly over the network) but the screen
+// draws at 60-144 Hz. Drawing each sample as it lands makes the robot stutter, and differencing raw
+// samples gives a noisy speed that kicks the balls. So: estimate the speed from the samples' own
+// timestamps, predict forward between samples, and ease the drawn pose onto the prediction. The
+// drawn pose's motion is what physics gets, so loose balls stay exactly still on the drawn carpet.
+let robotPose=null;
+const rp={ have:false, sx:0, sy:0, sz:0, syaw:0, st:0, sAt:0,      // last sample (+ server time µs, local ms)
+           vx:0, vy:0, vw:0,                                          // estimated field velocity
+           x:0, y:0, z:0, yaw:0, snap:true,                           // drawn pose
+           fvx:0, fvy:0, fw:0 };                                       // drawn pose's (smoothed) velocity
+const wrapA=(a)=>Math.atan2(Math.sin(a), Math.cos(a));
+const poseYaw=(p)=> p.q ? Math.atan2(2*(p.q.w*p.q.z + p.q.x*p.q.y), 1-2*(p.q.y*p.q.y + p.q.z*p.q.z)) : (p.yaw||0);
+function setRobotPose(p, time){
+  robotPose=p;
+  if (!p){ rp.have=false; rp.snap=true; rp.vx=rp.vy=rp.vw=0; if (fieldOn) placeRobot(FIELD_L/2, FIELD_W/2, 0, 0); return; }
+  const now=performance.now();
+  if (rp.have && time!=null && time===rp.st) return;                  // same message as last frame
+  const yaw=poseYaw(p);
+  if (rp.have){
+    const dt = time!=null && rp.st ? (time-rp.st)/1e6 : (now-rp.sAt)/1000;
+    const dx=p.x-rp.sx, dy=p.y-rp.sy, dyaw=wrapA(yaw-rp.syaw);
+    if (dt<=0 || dt>0.5 || Math.hypot(dx,dy)>1.5 || Math.abs(dyaw)>1.2){ rp.vx=rp.vy=rp.vw=0;   // pose reset / gap
+      if (Math.hypot(dx,dy)>1.5 || Math.abs(dyaw)>1.2) rp.snap=true; }
+    else { const k=Math.min(1, dt/0.06);                             // ~60 ms velocity smoothing
+      rp.vx+= (dx/dt-rp.vx)*k; rp.vy+= (dy/dt-rp.vy)*k; rp.vw+= (dyaw/dt-rp.vw)*k; }
+  } else rp.snap=true;
+  rp.sx=p.x; rp.sy=p.y; rp.sz=p.z||0; rp.syaw=yaw; rp.st=time ?? 0; rp.sAt=now; rp.have=true;
+}
+function placeRobot(x, y, z, yaw){ robotRoot.position.set(x, y, z); robotRoot.quaternion.setFromAxisAngle(_Z, yaw); }
+function updateRobotPose(dt){
+  rp.fd=null;
+  if (!rp.have){ sim?.setFrameMotion?.(null, 0); return; }
+  const age=Math.min((performance.now()-rp.sAt)/1000, 0.1);          // predict at most 100 ms ahead
+  if (age>=0.1 && performance.now()-rp.sAt>250){ rp.vx*=0.8; rp.vy*=0.8; rp.vw*=0.8; }   // samples stopped
+  const tx=rp.sx+rp.vx*age, ty=rp.sy+rp.vy*age, tyaw=rp.syaw+rp.vw*age;
+  const px=rp.x, py=rp.y, pyaw=rp.yaw;
+  if (rp.snap || dt<=0){ rp.x=tx; rp.y=ty; rp.z=rp.sz; rp.yaw=tyaw; }
+  else { const k=1-Math.exp(-dt/0.05);
+    rp.x+=(tx-rp.x)*k; rp.y+=(ty-rp.y)*k; rp.z+=(rp.sz-rp.z)*k; rp.yaw=wrapA(rp.yaw+wrapA(tyaw-rp.yaw)*k); }
+  placeRobot(rp.x, rp.y, rp.z, rp.yaw);
+  { // this frame's robot motion in the physics (CAD) axes at the start of the frame
+    const th0=pyaw+robotFront.rotation.z, c0=Math.cos(th0), s0=Math.sin(th0), dx=rp.x-px, dy=rp.y-py;
+    rp.fd = rp.snap ? null : { x: c0*dx + s0*dy, y: -s0*dx + c0*dy, w: wrapA(rp.yaw-pyaw) }; }
+  if (rp.snap || dt<=0){ rp.fvx=rp.fvy=rp.fw=0; rp.snap=false; }
+  else { const k=1-Math.exp(-dt/0.04);
+    rp.fvx+=((rp.x-px)/dt-rp.fvx)*k; rp.fvy+=((rp.y-py)/dt-rp.fvy)*k; rp.fw+=(wrapA(rp.yaw-pyaw)/dt-rp.fw)*k; }
+  if (!sim?.setFrameMotion) return;
+  // field velocity -> the physics (CAD) axes: CAD frame = field rotated by yaw + front offset
+  const th=rp.yaw+robotFront.rotation.z, c=Math.cos(th), s2=Math.sin(th);
+  sim.setFrameMotion({ x: c*rp.fvx + s2*rp.fvy, y: -s2*rp.fvx + c*rp.fvy }, rp.fw,
+                     { x: -cadRoot.position.x, y: -cadRoot.position.y });   // turning centre = robot centre
+}
+const _lastRobot=new THREE.Vector3();
+function followRobot(){
+  if (!$('ntFollow').checked){ _lastRobot.copy(robotRoot.position); return; }
+  const d=robotRoot.position.clone().sub(_lastRobot); _lastRobot.copy(robotRoot.position);
+  if (d.lengthSq()>0 && d.lengthSq()<25){ controls.target.add(d); camera.position.add(d); }
+}
+function setFieldMode(on){
+  fieldOn=on;
+  if (on){
+    if (!fieldGroup){ fieldGroup=buildField(); scene.add(fieldGroup); }
+    fieldGroup.visible=true;
+    robotRoot.position.set(0,0,0); robotRoot.quaternion.identity(); robotFront.rotation.set(0,0,0); cadRoot.position.set(0,0,0);
+    const b=cadBox(group), c=b.getCenter(new THREE.Vector3());
+    cadRoot.position.set(-c.x, -c.y, -b.min.z);                    // robot centre on the floor at the origin
+    robotFront.rotation.z=FRONT_YAW[$('ntFront').value] ?? 0;
+    rp.snap=true; if (robotPose) updateRobotPose(0); else placeRobot(FIELD_L/2, FIELD_W/2, 0, 0);
+    _lastRobot.copy(robotRoot.position);
+    controls.target.copy(robotRoot.position); camera.position.copy(robotRoot.position).add(new THREE.Vector3(-3.5,-4.5,3.5));
+    camera.near=0.02; camera.far=200; camera.updateProjectionMatrix();
+  } else {
+    sim?.setFrameMotion?.(null, 0);
+    if (fieldGroup) fieldGroup.visible=false;
+    robotRoot.position.set(0,0,0); robotRoot.quaternion.identity(); robotFront.rotation.set(0,0,0); cadRoot.position.set(0,0,0);
+    const b=new THREE.Box3().setFromObject(group), c=b.getCenter(new THREE.Vector3()), s=b.getSize(new THREE.Vector3()).length();
+    controls.target.copy(c); camera.position.copy(c).add(new THREE.Vector3(s*.6,-s*.7,s*.5));
+    camera.near=s/100; camera.far=s*10; camera.updateProjectionMatrix();
+  }
+  controls.update();
+}
+$('ntField').onchange=()=>setFieldMode($('ntField').checked);
+$('ntFront').onchange=()=>{ try { localStorage.setItem('ntFront:'+currentJob, $('ntFront').value); } catch(e){}
+  if (fieldOn){ robotFront.rotation.z=FRONT_YAW[$('ntFront').value] ?? 0; } };
 
 // ---------- pivot from hinge ----------
 // For a pivot the CAD has no mate for (e.g. a hood fastened in place): 1) click the hinge shaft,
@@ -594,11 +1015,13 @@ function renderSubs(){
     rng.min=sub.min ?? (isSlider?-0.5:-180); rng.max=sub.max ?? (isSlider?0.5:180); rng.step=isSlider?0.005:1; rng.value=0;
     const unit=isSlider?'m':'°';
     val.textContent=`0${unit}`;
-    rng.value=sub._val||0; val.textContent=`${(+rng.value).toFixed(isSlider?3:0)}${unit}`;
-    rng.addEventListener('input',()=>{ val.textContent=`${(+rng.value).toFixed(isSlider?3:0)}${unit}`;
+    const showVal=()=>{ val.textContent=fmtPos(sub.type, +rng.value-(sub.zero||0)); };
+    rng.value=sub._val||0; showVal();
+    rng.addEventListener('input',()=>{ showVal();
       sub._val=+rng.value; if (sim) sim.setTarget('user:'+sub.id, sub._val); else driveSub(sub,sub._val); });
     const rrow=document.createElement('div'); rrow.style.display='flex'; rrow.style.alignItems='center'; rrow.style.gap='6px';
     rrow.append(rng, val); box.append(rrow);
+    rrow.dataset.drop='user:'+sub.id; rrow.dataset.dropLabel=sub.name; sub._rng=rng; sub._valEl=val;
 
     const tools=document.createElement('div'); tools.className='tools';
     const flip=document.createElement('button'); flip.className='iconbtn'; flip.textContent='⇄ flip axis';
@@ -620,6 +1043,10 @@ function renderSubs(){
         if (sim) sim.setSpin('user:'+sub.id, sub._spin ? SPIN_DPS : 0); };
       tools.append(spin);
     }
+    if (sub.type!=='roller') tools.append(...zeroButtons(sub, 'user:'+sub.id, sub.type, ()=>sub._val||0,
+      (v)=>{ const c=Math.min(Math.max(v, +rng.min), +rng.max); rng.value=c; sub._val=c; showVal();
+             if (sim) sim.setTarget('user:'+sub.id, c); else driveSub(sub, c); },
+      ()=>{ showVal(); saveSubs(); }));
     tools.append(flip, pick, showA, del); box.append(tools);
     host.append(box);
   });
@@ -643,7 +1070,25 @@ function applyAutoJoints(keys){
     js.forEach((j,i)=>{ if (j.memberSet.has(k)) M.premultiply(mats[i]); });
     m.matrix.copy(M); m.matrixWorldNeedsUpdate=true; }
 }
-function fmtJoint(j){ return j.type==='slider' ? `${j.value.toFixed(3)} m` : `${Math.round(j.value)}°`; }
+// ---- user-defined zero ----
+// Each mechanism can have its own 0: move it to where your robot code calls 0 (e.g. arm stowed),
+// press "set 0", and every readout and every NetworkTables value is measured from there. Internally
+// joints still use CAD units; zero is only an offset: shown = internal - zero, NT value v -> v + zero.
+function fmtPos(type, v){ const x=Math.abs(v)<5e-4 ? 0 : v; return type==='slider' ? `${x.toFixed(3)} m` : `${Math.round(x)}°`; }
+function fmtJoint(j){ return fmtPos(j.type, j.value-(j.zero||0)); }
+function actualPos(id, fallback){ const v=sim?.jointValue(id); return v==null || !isFinite(v) ? fallback : v; }
+function zeroButtons(obj, id, type, getVal, onGo, onChange){
+  const b=document.createElement('button'); b.className='iconbtn';
+  b.title='Make the position the mechanism is at right now its 0 (readouts and NetworkTables values are measured from it)';
+  const go=document.createElement('button'); go.className='iconbtn'; go.textContent='→ 0'; go.title='Move to 0';
+  const clr=document.createElement('button'); clr.className='iconbtn'; clr.textContent='✕'; clr.title='Clear the custom 0 (back to the CAD zero)';
+  const paint=()=>{ const on=!!obj.zero; b.textContent=on?'⌖ 0 set':'⌖ set 0'; b.classList.toggle('on', on); clr.style.display=on?'':'none';
+    if (on) b.title=`0 is at ${fmtPos(type, obj.zero)} from the CAD zero. Click to move 0 to the current position.`; };
+  b.onclick=()=>{ obj.zero=actualPos(id, getVal()); if (Math.abs(obj.zero)<1e-6) obj.zero=0; paint(); onChange(); };
+  clr.onclick=()=>{ obj.zero=0; paint(); onChange(); };
+  go.onclick=()=>onGo(obj.zero||0);
+  paint(); return [b, go, clr];
+}
 
 function refreshUserMarker(sub){
   sub._marker=makeSpinMarker(`spin:user:${sub.id}`, sub.axis, sub.members);
@@ -670,6 +1115,8 @@ function renderAutoSubsystems(){
                size:mech.members.length, memberSet:new Set(mech.members), _spin:false};
       j.freeKey=`free:${currentJob}:${sub.name}:${mech.name}`;
       try { j.free = localStorage.getItem(j.freeKey)==='1'; } catch(e){ j.free=false; }
+      j.zeroKey=`zero:${currentJob}:${sub.name}:${mech.name}`;
+      try { j.zero = +(localStorage.getItem(j.zeroKey)||0) || 0; } catch(e){ j.zero=0; }
       if (j.continuous){
         j.parts=mech.members;
         j.marker=makeSpinMarker(`spin:${j.id}`, j.axis, mech.members);
@@ -691,6 +1138,7 @@ function renderAutoSubsystems(){
       rng.addEventListener('input',()=>set(+rng.value));
       const rrow=document.createElement('div'); rrow.style.display='flex'; rrow.style.alignItems='center'; rrow.style.gap='6px';
       rrow.append(rng,val);
+      rrow.dataset.drop='joint:'+j.id; rrow.dataset.dropLabel=j.name;
       const tools=document.createElement('div'); tools.className='tools';
       if (j.continuous){
         const spin=document.createElement('button'); spin.className='iconbtn'; spin.textContent='▶ spin';
@@ -711,6 +1159,10 @@ function renderAutoSubsystems(){
           j._renderFree(); };
         j._renderFree();
         tools.append(lo,hi,fr);
+        tools.append(...zeroButtons(j, j.id, j.type, ()=>j.value,
+          (v)=>{ const c=Math.min(Math.max(v, +rng.min), +rng.max); set(c); },
+          ()=>{ try { j.zero ? localStorage.setItem(j.zeroKey, String(j.zero)) : localStorage.removeItem(j.zeroKey); } catch(e){}
+                val.textContent=fmtJoint(j); }));
       }
       const reset=document.createElement('button'); reset.className='iconbtn'; reset.textContent='↺ rest';
       reset.onclick=()=>{ j._spin=false; set(j.rest); renderSpinState(); };
@@ -871,11 +1323,12 @@ function renderRollerSets(){
     top.append(name, kind); box.append(top);
 
     const row=document.createElement('div'); row.className='tools'; row.style.alignItems='center';
-    const rps=document.createElement('input'); rps.type='number'; rps.min='0'; rps.step='1'; rps.value=set.rps;
+    const rps=document.createElement('input'); rps.type='number'; rps.step='1'; rps.value=set.rps;
     rps.title='Speed of every roller in this set (revolutions per second)';
     rps.style.cssText='width:58px; background:#0f1318; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:2px 6px;';
     const unit=document.createElement('span'); unit.className='small'; unit.style.margin='0'; unit.textContent='rps';
-    rps.onchange=()=>{ set.rps=Math.max(0,+rps.value||0); saveRollerSets(); applySetSpin(set); };
+    rps.onchange=()=>{ set.rps=+rps.value||0; saveRollerSets(); applySetSpin(set); };
+    rps.dataset.drop='rollerset:'+set.id; rps.dataset.dropLabel=`${set.name} speed`; set._rpsEl=rps;
     const spin=document.createElement('button'); spin.className='iconbtn';
     const paint=()=>{ spin.textContent=set._spin?'⏸ stop':'▶ spin'; spin.classList.toggle('on',!!set._spin); };
     spin.onclick=()=>{ set._spin=!set._spin; paint(); applySetSpin(set); }; paint();
@@ -933,7 +1386,7 @@ function applySetSpin(set){
     if (sim) sim.setSpin(j.id, set._spin ? set.rps*360 : 0); }
 }
 async function saveRollerSets(){
-  const clean=rollerSets.map(({_spin,...s2})=>s2);
+  const clean=rollerSets.map(s2=>Object.fromEntries(Object.entries(s2).filter(([k])=>!k.startsWith('_'))));
   try { await fetch(`/api/rollersets/${currentJob}`,{method:'POST',
     headers:{'Content-Type':'application/json'}, body:JSON.stringify(clean)}); } catch(e){}
 }
@@ -953,7 +1406,7 @@ $('useDetectedRollers').onchange=()=>{
 
 async function saveSubs(){
   // strip runtime-only fields before persisting
-  const clean=subsystems.map(({_spin,_ang,_marker,_val,...s})=>s);
+  const clean=subsystems.map(s=>Object.fromEntries(Object.entries(s).filter(([k])=>!k.startsWith('_'))));
   try { await fetch(`/api/subsystems/${currentJob}`,{method:'POST',
     headers:{'Content-Type':'application/json'}, body:JSON.stringify(clean)}); } catch(e){}
 }
@@ -967,9 +1420,9 @@ setInterval(()=>{ const now=performance.now(), dt=(now-lastT)/1000; lastT=now;
   for (const j of autoJoints){ if (j._spin){
     let v=j.value+dt*220; if (v>j.max) v-=360;          // wrap within the slider's 360° window
     j._set(v); } }
-  const turning=rollerJoints.filter(j=>j.set._spin && j.set.rps>0);
+  const turning=rollerJoints.filter(j=>j.set._spin && j.set.rps);
   if (turning.length){
-    for (const j of turning) j.value=(j.value + Math.min(j.set.rps, VIS_MAX_RPS)*360*dt) % 360;
+    for (const j of turning) j.value=(j.value + Math.sign(j.set.rps)*Math.min(Math.abs(j.set.rps), VIS_MAX_RPS)*360*dt) % 360;
     applyAutoJoints(turning.flatMap(j=>j.members)); }
 }, 33);
 
@@ -983,7 +1436,7 @@ let RAPIER=null, createPhysics=null, physicsBusy=false;
 const pieceMeshes=new Map();            // piece id -> mesh
 let pieceTemplate=null;                 // {geometry, material, center(Vector3), radius}
 const bodyKeys=new Map();               // body id -> keys (parts + spin markers) it moves
-const _B=new THREE.Matrix4(), _q=new THREE.Quaternion(), _t=new THREE.Vector3(), _one=new THREE.Vector3(1,1,1);
+const _B=new THREE.Matrix4(), _S=new THREE.Matrix4(), _q=new THREE.Quaternion(), _t=new THREE.Vector3(), _one=new THREE.Vector3(1,1,1);
 
 function isPieceKey(k){ const top=(model.topLevelNames||{})[k.split('/')[0]];
   return !k.includes('/') && top && PIECE_RE.test(top); }
@@ -1018,8 +1471,9 @@ async function startPhysics(){
       axis:sub.axis, members:sub.members, rest:0, continuous:sub.type==='roller',
       min:sub.min ?? (sub.type==='slider'?-0.5:-180), max:sub.max ?? (sub.type==='slider'?0.5:180) });
     s.build(parts, joints);
-    const box=new THREE.Box3().setFromObject(group);
+    const box=cadBox(group);
     s.addFloor(box.min.z);
+    s.setRobotBox(box.min, box.max);
 
     // which meshes each body moves (spin markers ride on their roller's body)
     bodyKeys.clear();
@@ -1070,13 +1524,13 @@ function addPiece(pos, tpl, rest){
   const toCenter=new THREE.Matrix4().makeTranslation(-pos[0],-pos[1],-pos[2]);
   m.userData.offset = rest ? toCenter.multiply(rest)                        // CAD piece, as placed
                            : new THREE.Matrix4().makeTranslation(-tpl.center.x,-tpl.center.y,-tpl.center.z);
-  scene.add(m); pieceMeshes.set(p.id, m); return p;
+  cadRoot.add(m); pieceMeshes.set(p.id, m); return p;
 }
 function dropPiece(at){
   if (!sim) return;
   const tpl=pieceTemplate||defaultTemplate();
   let pos=at;
-  if (!pos){ const b=new THREE.Box3().setFromObject(group), c=b.getCenter(new THREE.Vector3());
+  if (!pos){ const b=cadBox(group), c=b.getCenter(new THREE.Vector3());
     const s=b.getSize(new THREE.Vector3());
     pos=[c.x+(Math.random()-.5)*s.x*.5, c.y+(Math.random()-.5)*s.y*.5, b.max.z+tpl.radius*2+0.1]; }
   addPiece(pos, tpl, null);
@@ -1092,8 +1546,8 @@ function fillHopper(){
   const keys=Object.keys(meshesByKey).filter(k=>tops.includes(((model.partPaths||{})[k]||[])[0]));
   if (!keys.length){ $('physStatus').textContent='no sub-assembly named “hopper” found'; return; }
   const box=new THREE.Box3();
-  for (const k of keys){ const m=meshesByKey[k]; m.updateMatrixWorld(); box.union(new THREE.Box3().setFromObject(m)); }
-  const tpl=pieceTemplate||defaultTemplate(), r=tpl.radius, g=r/2, sq=0.005;   // foam: may start 5 mm squeezed
+  for (const k of keys) box.union(cadBox(meshesByKey[k]));
+  const tpl=pieceTemplate||defaultTemplate(), r=tpl.radius, g=r/2, sq=0.0008;  // < the shell's 1 mm: starts clear of the robot
   const reach=Math.max(...box.getSize(new THREE.Vector3()).toArray());
   const placed=[...sim.pieces].map(p=>{ const t=p.rb.translation(); return [t.x,t.y,t.z]; });
   const far=(q)=>placed.every(p=>(p[0]-q[0])**2+(p[1]-q[1])**2+(p[2]-q[2])**2 >= (2*r-sq)**2);
@@ -1103,7 +1557,7 @@ function fillHopper(){
       for (let y=box.min.y+r; y<=box.max.y-r && n<FILL_MAX; y+=g){
         const q=[x,y,z];
         if (!far(q)) continue;
-        const pr=sim.probe(q, r-sq, reach); if (!pr.clear || !pr.enclosed) continue;
+        const pr=sim.probe(q, r-sq, reach); if (!pr.clear || !pr.enclosed || pr.supported===false) continue;
         addPiece(q, tpl, null); placed.push(q); n++;
       }
   $('physStatus').textContent=`${physBase} · added ${n} pieces to the hopper`;
@@ -1113,6 +1567,8 @@ let readoutFrame=0, perfAcc={ms:0, frames:0, t:performance.now()}, physBase='';
 function physicsTick(dt){
   const t0=performance.now();
   sim.step(dt);
+  { const done=sim.takeMoved();     // robot motion the physics steps didn't cover -> loose balls on the field
+    if (fieldOn && rp.fd) sim.shiftLoose(rp.fd.x-done.x, rp.fd.y-done.y, rp.fd.w-done.w, { x:-cadRoot.position.x, y:-cadRoot.position.y }); }
   perfAcc.ms+=performance.now()-t0; perfAcc.frames++;
   if (performance.now()-perfAcc.t>1000){   // live timing: fps + physics cost per frame
     const secs=(performance.now()-perfAcc.t)/1000;
@@ -1121,12 +1577,12 @@ function physicsTick(dt){
   // live readouts: show where each joint really is (a free hopper being pushed, a stalled arm)
   if (++readoutFrame % 6 === 0) for (const j of autoJoints){ if (j.continuous || !j._val) continue;
     const v=sim.jointValue(j.id); if (v==null) continue;
-    j._val.textContent = j.type==='slider' ? `${v.toFixed(3)} m` : `${Math.round(v)}°`;
+    j._val.textContent = fmtPos(j.type, v-(j.zero||0));
     if (j.free){ j.value=v; j._rng.value=v; } }
   for (const [id,keys] of bodyKeys){
     const rj = id.startsWith('roll:') ? rollerJoints.find(j=>j.id===id) : null;
     if (rj){   // real RPS in the sim; on screen: parent pose * capped visual spin (no strobing)
-      if (rj.set._spin) rj.value=(rj.value + Math.min(rj.set.rps, VIS_MAX_RPS)*360*dt) % 360;
+      if (rj.set._spin) rj.value=(rj.value + Math.sign(rj.set.rps)*Math.min(Math.abs(rj.set.rps), VIS_MAX_RPS)*360*dt) % 360;
       const parent=sim.joints.get(id)?.parent, pp=parent && parent!=='chassis' ? sim.bodyPose(parent) : null;
       if (pp) _B.compose(_t.set(pp.t.x,pp.t.y,pp.t.z), _q.set(pp.q.x,pp.q.y,pp.q.z,pp.q.w), _one); else _B.identity();
       _B.multiply(rotAbout(rj.axis.origin, rj.axis.dir, THREE.MathUtils.degToRad(rj.value)));
@@ -1140,12 +1596,28 @@ function physicsTick(dt){
   const alive=new Set();
   for (const p of sim.pieces){ alive.add(p.id); const m=pieceMeshes.get(p.id); if (!m) continue;
     const t=p.rb.translation(), q=p.rb.rotation();
-    _B.compose(_t.set(t.x,t.y,t.z), _q.set(q.x,q.y,q.z,q.w), _one);
+    _B.compose(_t.set(0,0,0), _q.set(q.x,q.y,q.z,q.w), _one);
+    // foam squash: flatten the ball where it's pressed instead of drawing a rigid sphere sunk into
+    // the part. Along n the ball shrinks to meet the contact surface(s); it bulges a little sideways
+    // (volume kept). Eased so it doesn't flicker as contacts come and go.
+    const sq=p.squash, r=p.radius, cur=m.userData.sq || (m.userData.sq={ x:0, y:0, z:1, front:0, back:0 });
+    const k=0.35;
+    if (sq){ cur.x=sq.n.x; cur.y=sq.n.y; cur.z=sq.n.z; cur.front+=(sq.front-cur.front)*k; cur.back+=(sq.back-cur.back)*k; }
+    else if (!p.rb.isSleeping()){ cur.front*=1-k; cur.back*=1-k; }
+    let ox=0, oy=0, oz=0;
+    if (cur.front+cur.back > 2e-4){
+      const a=Math.max(r-(cur.front+cur.back)/2, r*0.6), sa=a/r, sb=Math.sqrt(1/sa), d=sa-sb;
+      const nx=cur.x, ny=cur.y, nz=cur.z;
+      _S.set(sb+d*nx*nx, d*nx*ny, d*nx*nz, 0,  d*ny*nx, sb+d*ny*ny, d*ny*nz, 0,  d*nz*nx, d*nz*ny, sb+d*nz*nz, 0,  0,0,0,1);
+      _B.premultiply(_S);
+      const off=(cur.front-cur.back)/2; ox=nx*off; oy=ny*off; oz=nz*off;
+    }
+    _B.setPosition(t.x+ox, t.y+oy, t.z+oz);
     m.matrix.multiplyMatrices(_B, m.userData.offset); m.matrixWorldNeedsUpdate=true; }
-  for (const [id,m] of pieceMeshes) if (!alive.has(id)){ scene.remove(m); pieceMeshes.delete(id); }
+  for (const [id,m] of pieceMeshes) if (!alive.has(id)){ cadRoot.remove(m); pieceMeshes.delete(id); }
 }
 
-function clearPieceMeshes(){ for (const m of pieceMeshes.values()) scene.remove(m); pieceMeshes.clear(); }
+function clearPieceMeshes(){ for (const m of pieceMeshes.values()) cadRoot.remove(m); pieceMeshes.clear(); }
 function stopPhysics(){
   if (!sim) return;
   sim.free(); sim=null; clearPieceMeshes(); bodyKeys.clear();
@@ -1170,7 +1642,7 @@ renderer.domElement.addEventListener('pointerup', e=>{
   if (!sim || !e.shiftKey || selectMode) return;
   const hit=pickMesh(e); if (!hit) return;
   const r=(pieceTemplate||defaultTemplate()).radius;
-  dropPiece([hit.point.x, hit.point.y, hit.point.z + r*2 + 0.15]);
+  const hp=toCad(hit.point); dropPiece([hp.x, hp.y, hp.z + r*2 + 0.15]);
 });
 
 // ---------- define / group flow ----------
@@ -1203,9 +1675,9 @@ async function loadModel(job){
   { let pref=null; try { pref=localStorage.getItem(`useDetectedRollers:${job}`); } catch(e){}
     $('useDetectedRollers').checked = pref!==null ? pref==='1' : !rollerSets.length; }
   autoSubsystems = model.autoSubsystems || [];
-  if (group) scene.remove(group);
+  if (group) cadRoot.remove(group);
   markerGroup.clear(); autoJoints=[];
-  group = new THREE.Group(); scene.add(group); meshesByKey={}; restMat={};
+  group = new THREE.Group(); cadRoot.add(group); meshesByKey={}; restMat={};
   const byMesh={}; for (const k in model.parts){ (byMesh[model.parts[k].mesh] ||= []).push(k); }
   const restPoses = model.rest
     || (model.dofs[0]?.frames.find(f=>f.val===0) || model.dofs[0]?.frames[0])?.poses || {};
@@ -1229,6 +1701,7 @@ async function loadModel(job){
   controls.target.copy(ctr); camera.position.copy(ctr).add(new THREE.Vector3(s*.6,-s*.7,s*.5));
   camera.near=s/100; camera.far=s*10; camera.updateProjectionMatrix(); controls.update();
   buildDofUI(); renderAutoSubsystems(); renderSubs(); refitOldRollers(); rebuildRollerJoints(); renderRollerSets();
+  loadBindings(); if (fieldOn) setFieldMode(true);
   const total=model.dofs.length+autoSubsystems.length+subsystems.length;
   $('modelName').textContent = `· ${total} mechanism${total!==1?'s':''}`;
   localStorage.setItem('lastJob', job);

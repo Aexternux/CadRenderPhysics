@@ -219,6 +219,13 @@ def hinge_js():
     return resp
 
 
+@app.route("/nt4.js")
+def nt4_js():
+    resp = send_from_directory(ROOT, "nt4.js", mimetype="text/javascript", max_age=0)
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
 @app.route("/api/model/<job>")
 def model(job):
     if job in BUILTIN:
